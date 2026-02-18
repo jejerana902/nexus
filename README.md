@@ -248,6 +248,7 @@ Simple DEX for graduated tokens:
 - **Input Validation**: All inputs validated on-chain
 - **Slippage Protection**: Frontend includes slippage tolerance
 - **Fee Protection**: 1% platform fee prevents abuse
+- **Updated Dependencies**: Next.js 15.0.8+ (patched for DoS vulnerabilities)
 
 ## 🛠️ Development
 
