@@ -1,8 +1,16 @@
 // Contract ABIs - These would be imported from compiled contracts
 // For now, defining essential ABI fragments
 
-export const TOKEN_FACTORY_ADDRESS = process.env.NEXT_PUBLIC_TOKEN_FACTORY_ADDRESS as `0x${string}` || '0x'
-export const DEX_ADDRESS = process.env.NEXT_PUBLIC_DEX_ADDRESS as `0x${string}` || '0x'
+// Contract addresses - these must be set before using the application
+const factoryAddress = process.env.NEXT_PUBLIC_TOKEN_FACTORY_ADDRESS
+const dexAddress = process.env.NEXT_PUBLIC_DEX_ADDRESS
+
+if (!factoryAddress || !dexAddress) {
+  console.warn('Contract addresses not configured. Please set NEXT_PUBLIC_TOKEN_FACTORY_ADDRESS and NEXT_PUBLIC_DEX_ADDRESS in .env')
+}
+
+export const TOKEN_FACTORY_ADDRESS = (factoryAddress || '0x0000000000000000000000000000000000000000') as `0x${string}`
+export const DEX_ADDRESS = (dexAddress || '0x0000000000000000000000000000000000000000') as `0x${string}`
 
 export const TokenFactoryABI = [
   {

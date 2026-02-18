@@ -7,6 +7,10 @@ interface BondingCurveChartProps {
   tokenAddress: string
 }
 
+// Match contract constants for consistency
+const BASE_PRICE = 0.000001 // 1e-6 NEX
+const CURVE_FACTOR = 10000000000 // For exponential scaling
+
 export function BondingCurveChart({ tokenAddress }: BondingCurveChartProps) {
   const chartContainerRef = useRef<HTMLDivElement>(null)
   const chartRef = useRef<IChartApi | null>(null)
@@ -57,7 +61,7 @@ export function BondingCurveChart({ tokenAddress }: BondingCurveChartProps) {
         const timestamp = now - (100 - i) * 60 * 5 // 5 min intervals
         const supply = i * 1000000
         // Exponential curve: price = BASE_PRICE * e^(k * supply)
-        const price = 0.000001 * Math.exp(supply / 10000000000)
+        const price = BASE_PRICE * Math.exp(supply / CURVE_FACTOR)
         
         data.push({
           time: timestamp as Time,

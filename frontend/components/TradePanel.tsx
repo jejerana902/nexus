@@ -34,8 +34,9 @@ export function TradePanel({ tokenAddress, tokenSymbol, userBalance }: TradePane
     if (!amount || !address || !userBalance) return
     
     try {
-      // Convert amount to bigint (assuming 18 decimals)
-      const sellAmount = BigInt(Math.floor(parseFloat(amount) * 1e18))
+      // Use parseUnits for proper BigInt conversion (18 decimals)
+      const { parseUnits } = await import('viem')
+      const sellAmount = parseUnits(amount, 18)
       await sellToken(tokenAddress, sellAmount)
       setAmount('')
     } catch (error) {

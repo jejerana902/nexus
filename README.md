@@ -49,8 +49,8 @@ Add Nexus Testnet III to MetaMask:
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/jejerana902/nexus.git
-cd nexus
+git clone https://github.com/yourusername/nexuspump.git
+cd nexuspump
 ```
 
 ### 2. Install Dependencies

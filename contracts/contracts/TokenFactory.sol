@@ -227,11 +227,11 @@ contract TokenFactory is ReentrancyGuard {
         // Mark as graduated
         token.setGraduated();
         
-        // Calculate liquidity amounts
-        uint256 nexLiquidity = address(this).balance;
+        // Use only the token's raised amount for liquidity (not entire contract balance)
+        uint256 nexLiquidity = token.totalRaised();
         uint256 tokenSupply = token.totalSupply();
         
-        // Mint additional tokens for DEX liquidity (50% more)
+        // Mint additional tokens for DEX liquidity (50% of current supply)
         uint256 tokensForDEX = tokenSupply / 2;
         token.mint(address(this), tokensForDEX);
         
