@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import { createChart, ColorType, IChartApi, ISeriesApi } from 'lightweight-charts'
+import { createChart, ColorType, IChartApi, ISeriesApi, Time } from 'lightweight-charts'
 
 interface BondingCurveChartProps {
   tokenAddress: string
@@ -60,7 +60,7 @@ export function BondingCurveChart({ tokenAddress }: BondingCurveChartProps) {
         const price = 0.000001 * Math.exp(supply / 10000000000)
         
         data.push({
-          time: timestamp,
+          time: timestamp as Time,
           value: price,
         })
       }
