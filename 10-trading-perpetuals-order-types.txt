@@ -1,0 +1,34 @@
+════════════════════════════════════════════════════════════
+URL: https://docs.nexus.xyz/trading/perpetuals/order-types
+Title: Order Types | Nexus Docs
+Scraped: 2026-01-30 09:47:32 UTC
+════════════════════════════════════════════════════════════
+
+Orders are instructions to buy or sell assets at specified conditions. They define what, when, and how trades should execute on the exchange.
+Nexus supports a diverse range of order types and configurations:
+Market:
+Executes immediately against resting liquidity; any unfilled size is canceled.
+Limit:
+Placed at a specific price and stays on the order book until filled or cancelled. Filled at selected limit price or better
+GTD (Good-Till-Date): Stays live until the chosen expiry or when the order fills.
+IOC (Immediate-or-Cancel): Fills what it can instantly, cancels the rest.
+Stop:
+Stop Market: A market order that is executed at the best market price when mark price reaches selected market price
+Stop Limit: A limit order that is only executed at selected limit price after mark price reaches selected trigger price.
+Market close orders:
+Automatically-size to fully close your current position, canceling any resting or untriggered orders before closing automatically.
+Reduce-only orders:
+Ensures the order can only decrease your current open position size.
+Limit: Limit reduce-only orders automatically adjust if a subsequent order reduces your current position
+Previous
+Margining
+chevron-left
+Next
+Positions
+chevron-right
+Last updated
+2 months ago
+
+════════════════════════════════════════════════════════════
+End of document
+════════════════════════════════════════════════════════════

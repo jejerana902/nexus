@@ -1,0 +1,56 @@
+════════════════════════════════════════════════════════════
+URL: https://docs.nexus.xyz/zkvm/overview/architecture
+Title: Architecture | zkVM | Nexus Docs
+Scraped: 2026-01-30 09:47:32 UTC
+════════════════════════════════════════════════════════════
+
+The ethos of the Nexus project is a commitment to open and transparent science and engineering. For an in-depth look at the science behind the Nexus zkVM, see the
+specification
+.
+hashtag
+Core Components
+The Nexus zkVM features a modular and extensible architecture built from highly optimized components:
+The Nexus Runtime
+: A feature-rich runtime environment that streamlines guest program development for the Nexus zkVM, with full support for public and private inputs, public outputs, logging, and performance benchmarking — all in native Rust syntax.
+The Nexus zkVM Machine Architecture
+: A custom designed and from-scratch implemented and purpose-built RISC-V virtual machine in a modified Harvard architecture, designed to optimize prover performance through careful memory management in support of a “only prove what you use” model.
+The Nexus zkVM
+: A fully-specified Algebraic Intermediate Representation (AIR) arithmetization of the machine architecture, featuring comprehensive constraints for the full RISC-V32im instruction set alongside efficient offline memory checking.
+The Stwo Prover:
+An integration with StarkWare’s powerful
+Stwo prover
+arrow-up-right
+(which has since rebranded from Stwo to S-two), a state-of-the-art Circle STARK with excellent performance characteristics.
+Every component within the Nexus zkVM has been carefully chosen or designed from scratch by the
+Nexus team
+arrow-up-right
+to maximize security, performance, modularity, and extensibility.
+As a consequence of the architectural foundation, the Nexus zkVM is architected to support new theoretical developments led by our research team, as well as tooling to accelerate deploying the zkVM for a variety of use cases:
+Proving Schemes
+: Beyond the Stwo prover, the Nexus zkVM maintains compatibility with the Nova family of folding schemes and supports integration of emerging proving constructions as cryptographic research advances.
+Precompiles
+: Precompiles are extensions to the instruction set of the machine architecture, supporting common operations (e.g., cryptographic hashing like Keccak, or matrix multiplication) that the zkVM can use to accelerate specific computations. Developers will be able to extend the zkVM with their own custom precompiles, as well as import those published by other developers.
+Developer Tooling:
+The Nexus zkVM comes with a comprehensive SDK that streamlines application development with APIs that enable efficient development workflows regardless of use case complexity.
+Language Support
+: As the Nexus zkVM implements RISC-V ISA, the zkVM can run programs written in most high-level languages (e.g., Rust, C++, etc.) given its common availability as a computation target.
+The zkVM aims to offer developers out-of-the-box prover performance and security, designed to power numerous applications.
+hashtag
+Proving Architectures
+The Nexus zkVM turns programs into proofs, but the computational work of executing and proving the zkVM must be implemented by a proving architecture. The Nexus zkVM’s flexible design supports diverse proving architectures, ranging from local sequential execution on personal devices to the massively parallel
+Nexus Network
+arrow-up-right
+, a globally-distributed proving infrastructure currently in active development.
+Related:
+zkVM Overview
+Getting Started
+Previous
+zkVM Overview
+chevron-left
+Next
+Getting Started
+chevron-right
+
+════════════════════════════════════════════════════════════
+End of document
+════════════════════════════════════════════════════════════

@@ -1,0 +1,594 @@
+════════════════════════════════════════════════════════════
+URL: https://docs.nexus.xyz/network/building-on-the-layer-1/developing-your-first-app
+Title: Developing your first app | Network | Nexus Docs
+Scraped: 2026-01-30 09:47:32 UTC
+════════════════════════════════════════════════════════════
+
+hashtag
+Install Node.js and npm if not already installed
+Then install Hardhat:
+Install Hardhat
+Copy
+npm
+install
+--save-dev
+hardhat
+Hardhat is a development environment and task runner for Ethereum that helps developers compile, deploy, test, and debug smart contracts. The --save-dev flag ensures Hardhat is installed as a development-only dependency, keeping it separate from production dependencies.
+1
+hashtag
+Create a new project
+Copy
+#
+Create a new directory
+mkdir
+my-first-contract
+cd
+my-first-contract
+#
+Initialize a Node.js project with package.json
+npm
+init
+-y
+#
+Initialize a new Hardhat project
+npx
+hardhat
+2
+hashtag
+Configure Hardhat for Nexus
+Create or update
+hardhat.config.js
+in your project root to define the network configuration, RPC endpoint, and chainId used for signature verification:
+hardhat.config.js
+Copy
+require
+(
+"
+dotenv
+"
+)
+.
+config
+()
+;
+require
+(
+"
+@nomicfoundation/hardhat-toolbox
+"
+)
+;
+module
+.
+exports
+=
+{
+solidity
+:
+"
+0.8.20
+"
+,
+networks
+:
+{
+nexus
+:
+{
+url
+:
+"
+https://testnet.rpc.nexus.xyz
+"
+,
+chainId
+:
+3945
+,
+accounts
+:
+process
+.
+env
+.
+PRIVATE_KEY
+?
+[
+process
+.
+env
+.
+PRIVATE_KEY
+]
+:
+[]
+}
+}
+};
+3
+hashtag
+Configure your private key in
+.env
+Get your private key from Nexus:
+Go to the Nexus Web App: https://app.nexus.xyz/
+Sign in to your account in the top right corner
+Click the “Settings” tab
+Navigate to “Account & Security”
+Click on “Private Key”
+Click “Reveal” to view your private key
+Create your
+.env
+file in the project root and add your private key:
+.env
+Copy
+PRIVATE_KEY=your_private_key_here
+Install
+dotenv
+:
+Install dotenv
+Copy
+npm
+install
+dotenv
+Ensure
+hardhat.config.js
+includes:
+hardhat.config.js (top)
+Copy
+require
+(
+"
+dotenv
+"
+)
+.
+config
+()
+;
+circle-exclamation
+Important Security Notes:
+Never share your private key
+Never commit it to version control
+Keep it secure and backed up
+Use a test account for development
+4
+hashtag
+Receive test NEX from a faucet for contract deployment
+To deploy on Nexus Layer 1 you’ll need NEX tokens to pay gas fees. You can receive test NEX in two ways:
+Earn NEX through Proving — submit proofs to earn points and NEX in real-time. For details see the Proving Guide: https://docs.nexus.xyz/layer-1/network-devnet/web-node
+Use the Nexus Faucet: https://faucets.alchemy.com/faucets/nexus-testnet
+Note: Faucet amounts are sufficient for basic deployments. For extensive testing, consider earning NEX through proving.
+hashtag
+Writing and Deploying Your First Contract
+1
+hashtag
+Create a contract file
+Create
+contracts/Lock.sol
+. This default Solidity example demonstrates core concepts such as sending and holding ETH, using block timestamps, events, and enforcing access control with
+msg.sender
+. It implements a timelock wallet: it requires an
+unlockTime
+(future timestamp) and an ETH payment in the payable constructor; funds are locked until
+unlockTime
+, and only the deploying address can withdraw.
+contracts/Lock.sol
+Copy
+contract
+Lock
+{
+uint
+public
+unlockTime
+;
+address
+payable
+public
+owner
+;
+event
+Withdrawal
+(
+uint
+amount
+,
+uint
+when
+);
+constructor
+(
+uint
+_unlockTime
+) payable
+{
+require
+(
+block
+.
+timestamp
+<
+_unlockTime
+,
+"Unlock time should be in the future"
+);
+unlockTime
+=
+_unlockTime
+;
+owner
+=
+payable
+(
+msg.sender
+);
+}
+function
+withdraw
+()
+public
+{
+// Uncomment this line, and the import of "hardhat/console.sol", to print a log in your terminal
+// console.log("Unlock time is %o and block timestamp is %o", unlockTime, block.timestamp);
+require
+(
+block
+.
+timestamp
+>=
+unlockTime
+,
+"You can't withdraw yet"
+);
+require
+(
+msg.sender
+==
+owner
+,
+"You aren't the owner"
+);
+emit
+Withdrawal
+(
+address
+(
+this
+).
+balance
+,
+block
+.
+timestamp
+);
+owner
+.
+transfer
+(
+address
+(
+this
+).
+balance
+);
+}
+}
+2
+hashtag
+Create a deployment script
+Create
+scripts/deploy.js
+. This script deploys your contract to the Layer 1 network, handling constructor parameters, async deployment, logging, and preparing for contract verification.
+scripts/deploy.js
+Copy
+const
+hre
+=
+require
+(
+"
+hardhat
+"
+)
+;
+async
+function
+main
+()
+{
+console
+.
+log
+(
+"
+Deploying Lock contract...
+"
+)
+;
+//
+Get the contract factory
+const
+Lock
+=
+await
+hre
+.
+ethers
+.
+getContractFactory
+(
+"
+Lock
+"
+)
+;
+//
+Deploy the contract
+//
+The constructor requires a timestamp for the unlock time
+const
+unlockTime
+=
+Math
+.
+floor
+(
+Date
+.
+now
+()
+/
+1000
+)
++
+60
+*
+60
+*
+24
+*
+365
+;
+//
+1 year from now
+const
+lock
+=
+await
+Lock
+.
+deploy
+(unlockTime)
+;
+//
+Wait for deployment to finish
+await
+lock
+.
+waitForDeployment
+()
+;
+const
+lockAddress
+=
+await
+lock
+.
+getAddress
+()
+;
+console
+.
+log
+(
+`
+Lock contract deployed to:
+${
+lockAddress
+}
+`
+)
+;
+//
+Wait for a few block confirmations before verifying
+console
+.
+log
+(
+"
+Waiting for block confirmations...
+"
+)
+;
+await
+new
+Promise(
+resolve
+=>
+setTimeout
+(resolve
+,
+30000
+))
+;
+//
+Wait 30 seconds
+//
+Verify the contract
+console
+.
+log
+(
+"
+Verifying contract...
+"
+)
+;
+try
+{
+await
+hre
+.
+run
+(
+"
+verify:verify
+"
+,
+{
+address
+:
+lockAddress
+,
+constructorArguments
+:
+[unlockTime]
+,
+}
+)
+;
+console
+.
+log
+(
+"
+Contract verified successfully
+"
+)
+;
+}
+catch
+(error)
+{
+if
+(
+error
+.
+message
+.
+includes
+(
+"
+Already Verified
+"
+))
+{
+console
+.
+log
+(
+"
+Contract is already verified!
+"
+)
+;
+}
+else
+{
+console
+.
+error
+(
+"
+Error verifying contract:
+"
+,
+error)
+;
+}
+}
+}
+//
+We recommend this pattern to be able to use async/await everywhere
+//
+and properly handle errors.
+main
+()
+.
+catch
+(
+(
+error
+)
+=>
+{
+console
+.
+error
+(error)
+;
+process
+.
+exitCode
+=
+1
+;
+}
+)
+;
+3
+hashtag
+Deploying your contract
+To deploy to the Nexus network:
+Deploy command
+Copy
+npx
+hardhat
+run
+scripts/deploy.js
+--network
+nexus
+Expected terminal output:
+Example output
+Copy
+Copy
+Deploying Lock contract...
+Lock contract deployed to: 0x...  # Your contract's address will appear here
+Save the deployed contract address to interact with the contract later.
+4
+hashtag
+Examine the Lock contract on the Nexus Explorer
+Visit the Testnet III Nexus Explorer: https://nexus.testnet.blockscout.com
+To find your contract:
+Copy your contract’s address from the deployment output
+Paste it into the search bar at the top of the explorer
+Click on your contract to view details (code, transaction history, balance, interactions, events)
+hashtag
+Project structure
+Your project directory should look like this:
+Project tree
+Copy
+my-first-contract/
+├── contracts/
+│   └── Lock.sol
+├── scripts/
+│   └── deploy.js
+├── .env
+├── hardhat.config.js
+└── package.json
+contracts/: Solidity smart contracts
+scripts/: Deployment and interaction scripts
+.env: Stores your private key and other sensitive data
+hardhat.config.js: Configures your development environment
+package.json: Manages project dependencies
+hashtag
+Conclusion and next steps
+Congratulations! You’ve successfully:
+Set up your development environment
+Created and deployed your first smart contract
+Verified your contract on the Nexus Explorer
+Recommended next steps:
+Read the Solidity documentation: https://docs.soliditylang.org/
+Study OpenZeppelin Contracts: https://docs.openzeppelin.com/contracts
+Join the Nexus Discord community: https://discord.com/invite/nexus-xyz
+Try deploying more complex contracts and build a full-stack dApp
+Responses are generated using AI and may contain mistakes.
+Previous
+Quickstart Development
+chevron-left
+Next
+Points and Tokens
+chevron-right
+
+════════════════════════════════════════════════════════════
+End of document
+════════════════════════════════════════════════════════════

@@ -1,0 +1,187 @@
+════════════════════════════════════════════════════════════
+URL: https://docs.nexus.xyz/trading/perpetuals/margining
+Title: Margining | Nexus Docs
+Scraped: 2026-01-30 09:47:32 UTC
+════════════════════════════════════════════════════════════
+
+Margining on the Nexus DEX is executed natively inside NexusCore, the enshrined financial coprocessor suite that powers the DEX. Nexus Layer 1 is designed to support both cross and isolated margin.
+In the DEX Alpha, only isolated margin types will be available.
+hashtag
+Initial Margin Requirements
+When opening a leveraged position, traders must post initial margin, defined by the maximum leverage allowed for a given market.
+Initial margin ensures sufficient collateral at entry and is verified atomically by the DEX Co-processor before an order is accepted into the orderbook. The initial margin calculation follows the formula:
+i
+n
+i
+t
+i
+a
+l
+_
+m
+a
+r
+g
+i
+n
+=
+p
+o
+s
+i
+t
+i
+o
+n
+_
+s
+i
+z
+e
+×
+m
+a
+r
+k
+_
+p
+r
+i
+c
+e
+l
+e
+v
+e
+r
+a
+g
+e
+initial\_margin = \frac{position\_size \times mark\_price}{leverage}
+ini
+t
+ia
+l
+_
+ma
+r
+g
+in
+=
+l
+e
+v
+er
+a
+g
+e
+p
+os
+i
+t
+i
+o
+n
+_
+s
+i
+ze
+×
+ma
+r
+k
+_
+p
+r
+i
+ce
+​
+Because margin validation runs inside NexusCore, traders benefit from:
+Deterministic enforcement
+(no race conditions from asynchronous contract calls)
+Sub-second execution
+aligned with block times
+Atomic settlement
+with order placement
+This ensures both speed and safety at the protocol level.
+hashtag
+Maintenance Margin
+Maintenance margin is the minimum margin that must be preserved to keep a position open. Falling below this threshold makes a position eligible for liquidation. Each market has its own maintenance margin fraction, calculated as:
+m
+a
+i
+n
+t
+e
+n
+a
+n
+c
+e
+_
+m
+a
+r
+g
+i
+n
+=
+1
+m
+a
+x
+_
+l
+e
+v
+e
+r
+a
+g
+e
+×
+2
+maintenance\_margin = \frac{1}{max_\_leverage \times 2}
+main
+t
+e
+nan
+ce
+_
+ma
+r
+g
+in
+=
+ma
+x
+_
+​
+l
+e
+v
+er
+a
+g
+e
+×
+2
+1
+​
+hashtag
+Liquidation Process
+Positions are liquidated when the mark price from the Nexus Oracle System causes equity to fall below maintenance margin. Refer to the
+Liquidations
+page to learn more.
+Previous
+Perpetuals
+chevron-left
+Next
+Order Types
+chevron-right
+Last updated
+2 months ago
+
+════════════════════════════════════════════════════════════
+End of document
+════════════════════════════════════════════════════════════

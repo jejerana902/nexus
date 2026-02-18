@@ -1,0 +1,78 @@
+════════════════════════════════════════════════════════════
+URL: https://docs.nexus.xyz
+Title: Introduction | Nexus Docs
+Scraped: 2026-01-30 09:47:32 UTC
+════════════════════════════════════════════════════════════
+
+Nexus is a high-performance Exchange Layer 1 blockchain purpose-built for verifiable finance. Our vision is to create a decentralized Internet Exchange — a global, Layer 1 platform where every asset, market, and stream of information is instantly tradable with extreme performance and low latency, powered by a foundation of high-performance verifiable computation based on zero-knowledge proofs. We believe finance is the most important application of verifiable computation, forming the foundation for a new programmable economy.
+Nexus targets the $1T+ in daily exchange TradFi volume market across global spot, perps, derivatives, options, RWAs, treasuries, FX, and prediction markets, bringing programmable and composable exchange markets to the Internet’s financial layer.
+hashtag
+Technical Overview
+Nexus presents a high-performance Layer 1 blockchain optimized from first principles for verifiable, high-throughput and low-latency exchange computation.
+The Nexus Layer 1 introduces a custom parallelized co-processor architecture that extends the NexusEVM with
+NexusCore
+: a bundle of high-performance, exchange-optimized computational engines enshrined directly at the protocol level.
+These native co-processors provide developers with:
+High-throughput matching engines
+Real-time price oracles and data feeds
+Automated liquidation systems
+Other specialized financial primitives
+This design enables the permissionless deployment of high-performance Internet markets (perpetual futures, options, prediction markets, etc.) with CEX-level throughput and latency.
+Additionally, Nexus co-processors expose CEX-like APIs directly at the L1 node level, allowing high-frequency trading strategies to be migrated onchain with minimal changes.
+Co-Designed for Performance and Verifiability
+NexusBFT consensus delivers sub-second block times with deterministic (instant) finality.
+The parallelized NexusEVM + NexusCore execution environment runs independent orderbook engines concurrently, eliminating head-of-line blocking.
+Every order, cancel, trade, settlement, and liquidation is executed and verified fully onchain and transparently.
+Long-term Scalability via Verifiable Computation
+At the core of the system is the Nexus zkVM – a high-performance zero-knowledge virtual machine designed to horizontally scale the network through distributed proof generation.
+The Nexus zkVM:
+Is already deployed and running on millions of devices through the Nexus Network distributed prover network
+Is currently experimental but production-ready for select workloads
+Will enable millions of devices to collaboratively validate financial computations, pushing Nexus toward Internet-scale throughput while preserving full cryptographic verifiability
+The Nexus blockchain consists of two parallel state-machines, NexusEVM and NexusCore,
+and a three-layer architecture, featuring Execution, Verification and Consensus.
+*Stack-based visualization, showing NexusEVM and NexusCore as two parallel state-machines.
+hashtag
+Architecture Overview
+Nexus Layer 1 is made up of the following components:
+Execution Layer:
+Processes all transactions and state transitions across two synchronized execution environments
+NexusCore
+: High-performance execution environment that hosts
+enshrined co-processors
+with deterministic, sub-500 ms latency for specialized financial operations.
+NexusEVM:
+An Ethereum-compatible virtual machine providing general-purpose programmability, composability, and full EVM tooling support for decentralized applications.
+Consensus Layer:
+NexusBFT:
+A custom Byzantine Fault Tolerant consensus protocol that finalizes dual-execution blocks, coordinates validators, and manages the on-chain registry of co-processors.
+Verification Layer:
+NexuszkVM:
+A verifiable compute engine that generates zero-knowledge proofs attesting to the correctness of all Layer-1 execution,
+NexusNetwork:
+Distributed proving network where nodes contribute computational power to produce and aggregate zkVM proofs, progressively moving the system toward a single
+Universal Proof
+of global state.
+This unified system enables users to build and access institutional-grade financial infrastructure on-chain, with sub-second latency, shared native liquidity, and cryptographic proof of correctness, bringing the speed, depth, and reliability of traditional markets into a verifiable and composable blockchain environment.
+Each layer is independently optimizable, and co-designed for high end-to-end performance.
+*Stack-based visualization, showing each of the three layers in the Nexus blockchain
+as independently optimizable, yet co-designed, components.
+hashtag
+Product Overview
+Perpetual futures
+– the Alpha release for Nexus DEX offers perpetuals trading
+High-performance APIs -
+Nexus offers native trading APIs for submitting trades to the exchange, compliant with the CCXT interface
+High-throughput, low latency
+– order matching is handled inside NexusCore, the Exchange coprocessor engine, for CEX-like speed with onchain security guarantees
+The Internet Exchange -
+spot, perps, options, RWAs, treasuries, FX, and other verifiable finance products and assets will roll out in subsequent product releases
+Next
+Nexus DEX Alpha
+chevron-right
+Last updated
+15 days ago
+
+════════════════════════════════════════════════════════════
+End of document
+════════════════════════════════════════════════════════════

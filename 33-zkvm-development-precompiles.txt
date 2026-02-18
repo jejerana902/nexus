@@ -1,0 +1,201 @@
+════════════════════════════════════════════════════════════
+URL: https://docs.nexus.xyz/zkvm/development/precompiles
+Title: Precompiles | zkVM | Nexus Docs
+Scraped: 2026-01-30 09:47:32 UTC
+════════════════════════════════════════════════════════════
+
+hashtag
+Introduction
+Precompiles
+are custom extensions to the zkVM’s instruction set that accelerate complex operations most efficiently proved by custom circuits.
+As a concrete example, consider
+Keccak
+arrow-up-right
+, which implements SHA-3 and is used prominently in some blockchains. The Keccak family of hash functions is optimized for performance on real CPUs—they make extensive use of bitwise operations that conventional CPUs can perform efficiently and in parallel. For current zkVM backends, however, proving a round of a Keccak hash function as a sequence of assembly instructions is quite expensive—that sequence of assembly instructions is long, and bitwise operations are each individually complex to express and expensive to constrain. Using a precompile, we can specifically design a monolithic, optimized circuit for proving a round of a Keccak hash function, potentially saving orders of magnitude in proving time for that operation. As it turns out, many common cryptographic and mathematical operations lend themselves to this kind of optimization.
+Actually integrating precompiles into the zkVM is a complex task, however. Guest programs need to be able to use precompiles as if they were standard Rust libraries, and the VM needs to be able to seamlessly provide precompile evaluations to the guest and constraints to the prover. The rest of this documentation is concerned with how the Nexus zkVM actually achieves this.
+hashtag
+Architecture
+Above all, the Nexus zkVM is designed to make guest program development as easy as possible. This means that, from the perspective of a developer writing a guest program, using precompiles should be just as easy as using any other Rust library. Using Keccak256 as a concrete example, we want developers to be able to write code like the following:
+Copy
+use_precompile!
+(
+nexus_keccak
+::
+Keccak256
+);
+#[
+nexus_rt
+::
+public_input
+(
+x
+)]
+#[
+nexus_rt
+::
+main
+]
+fn
+main
+(
+x
+:
+&
+[
+u8
+])
+->
+[
+u8
+;
+32
+]
+{
+Keccak256
+::
+hash
+(
+x
+)
+}
+Save for using the
+use_precompile!
+macro instead of the standard
+use
+statement, the guest program looks exactly as it would if it were using a standard Rust library. The guest program’s author needs no knowledge whatsoever about how precompiles work to use them correctly and efficiently.
+This naturally requires trade-offs. Here, the precompile’s developer takes on the burden of ensuring that their precompile is able to provide a usable interface to the precompile’s functionality. The zkVM tooling provides a set of macros and library functions that make this as easy as possible for precompile developers, but precompile development is a much more advanced task than guest program development.
+Consequently, the rest of this document primarily targets precompile developers and advanced users.
+hashtag
+Precompile Instructions
+The atom of the Nexus zkVM is the RISC-V
+RV32
+assembly instruction, each of which the zkVM emulates and proves. A primary characteristic of a modern assembly language like RISC-V is that its instruction set is simple and minimal, making extensions to the instruction set something that needs to be approached carefully.
+Fortunately, custom instructions are common, and RISC-V makes provisions for them. Specifically, there are two ways that the RISC-V ISA is designed to be extensible: syscalls (via
+ecall
+) and custom instructions with reserved opcodes.
+We chose to use reserved custom instructions for precompiles. This is primarily because, conceptually, precompiles are
+not
+syscalls; their purpose is not to interact with the host environment in any particular way. Instead, they are simply a way to extend the functionality of the zkVM, which matches the intended use of reserved custom instructions by the RISC-V specification. These custom instructions make up the
+RV32Nexus
+extension to the
+RV32
+ISA, which, in addition to supporting third-party precompiles, will include a set of vetted and optimized first-party precompiles that address common use-cases.
+This approach, however, creates some issues. System calls are fundamentally dynamic—one specifies desired behavior by setting register values, and there is only a single
+ecall
+instruction. As we use them, though, custom instructions, which are static in nature, also need to be dynamic in practice; we cannot simply reserve an instruction for every precompile in our ecosystem. Were we to do that, our ecosystem could only tolerate a small, fixed number of precompiles (1024, here), and developers would need to waste time best spent writing code and circuits fighting for a slot in the instruction set.
+Our solution to this problem is multi-fold. At the moment, we have constrained Nexus precompiles to a single opcode (
+0x0B
+) reserved by the RISC-V specification—technically, this opcode is only reserved by the RISC-V specification for the 32- and 64-bit instruction sets, but, fortunately, Nexus has no plans to ever develop a 128-bit-addressed zkVM. We chose for instructions using this opcode to be R-type. A precompile instruction, then, looks like the following:
+Our Use
+opcode
+(
+inst[6:0]
+)
+rd
+rs1
+rs2
+imm
+fn
+Dynamic R-type Precompiles
+0001011
+inst[11:7]
+inst[19:15]
+inst[24:20]
+N/A
+fn3 = inst[14:12]
+and
+fn7 = inst[31:25]
+We generate concrete instructions via a procedural macro, which, for each precompile call, ultimately generates a corresponding custom instruction roughly as follows:
+This doesn’t precisely match our implementation (see
+precompiles/macros/src/generation.rs
+arrow-up-right
+for that), but this example code is conceptually the same.
+FN3
+and
+FN7
+are dynamically generated on a per-guest-program-compilation basis. Concretely, guest programs are limited to using no more than 1,024 precompiles, and a procedural macro is responsible for generating an integer index in
+[0, 1024)
+for each precompile and embedding an (index → precompile) mapping into the compiled program’s code (again, see
+generation.rs
+for specifics).
+When the VM loads a guest program, it first uses the mapping embedded in the binary to discover which precompiles it will need to load in order to offer the guest program its desired functionality. The static reserved opcode and the mapping embedded in the guest program binary together encode all the instruction information needed for the zkVM to dynamically execute and prove the precompiles needed by a guest program.
+In order to verify a proof, the verifier also has to be able to discover the precompiles used by the guest program. The verifier does this almost exactly the same as the zkVM does. The only difference is that the verifier ignores the precompile’s implementation, only verifying that the precompile’s constraints are satisfied and the same as the ones proved by the zkVM. The Nexus ecosystem ensures that the verifier is able to seamlessly access the same precompile implementations as the zkVM.
+hashtag
+Executing Precompiles
+Precompiles are distributed as shared libraries compiled for the host’s native platform (e.g., Linux or macOS). On startup, the zkVM is configured to search for and load precompiles from a set of directories and files. Each of these is loaded into memory using the platform-appropriate dynamic library loading mechanism (e.g.,
+dlopen
+on Unixes).
+Precompile implementations adhere to the precompile interfaces specified in
+nexus-precompiles
+(see
+precompiles/src/traits.rs
+arrow-up-right
+). These traits mirror the traits that define native instructions as closely as possible, the only difference being that precompiles use dynamic dispatch instead of static dispatch via generics. Again, Nexus-provided macros automate exporting these implementations under well-known names which the zkVM can discover.
+It's worth noting that while dynamically loaded libraries typically use the C ABI, we chose to use the Rust ABI for the time being. Nexus’ macros and zkVM implementation hide this from precompile developers and users, but there is one user-visible consequence: precompiles must be built with the same Rust version as the zkVM. This is because Rust has no ABI stability guarantees, and after precompiles stabilize, we may switch internally to the completely stable C ABI.
+Upon loading a guest binary, the zkVM searches for well-known Nexus precompile symbols in that binary. If it finds any, it will construct a table mapping precompile instructions, discussed above, to the precompile implementations found in the loaded libraries. The zkVM will then use this table to dynamically dispatch precompile calls to the appropriate implementation during emulation.
+hashtag
+Proving Precompiles
+Because precompile instructions are conceptually no different from native instructions, the zkVM’s proving process is able to integrate them easily. We need no special treatment for precompiles in the tracing process; they are simply another kind of instruction present in the trace that the emulator generates for the prover.
+The prover, however, does need to be aware of precompiles in the same way that the emulator is. The same table constructed during guest binary loading is used by the prover, but instead of fetching instruction implementations, it fetches constraint circuits. The prover then uses these circuits to constrain the trace of the precompile instructions in the same way that it does for native instructions.
+hashtag
+Precompile Development
+Because of Nexus’ choice to prioritize the precompile consumer’s experience, developing precompiles is a more advanced task than developing guest programs. This section is intended to help precompile developers understand the steps required to develop a precompile, each either on the host or guest side.
+Fortunately, there are still only a few steps in developing a precompile, and Nexus provides tooling to assist with each. To create a precompile, a developer must:
+1
+hashtag
+Implement the precompile’s functionality (host)
+Write the host-side implementation that performs the operation exposed by the precompile.
+2
+hashtag
+Create the precompile’s circuit (host)
+Design and provide the constraint circuit that the prover will use to constrain traces for the precompile instruction.
+3
+hashtag
+Provide precompile consumers with an idiomatic interface (guest)
+Package a small, idiomatic Rust guest-side interface (crate) so guest programs can use the precompile like a normal library.
+The host functionality and circuit will be packaged in the precompile’s shared library, while the guest interface is packaged in a Rust crate imported by guest programs. The host implementation needs no awareness of the guest interface, and the guest interface needs no awareness of how the precompile is implemented.
+hashtag
+Host-Side Development
+The bulk of the work necessary to create a precompile is its host-side implementation and constraint circuit. Concretely, precompile developers must write a
+struct
+which implements
+PrecompileInstruction
+(which will be specified in
+precompiles/src/traits.rs
+arrow-up-right
+once full precompile support is published). The source code for this trait (and its supertraits) is extensively documented, and for the most up-to-date guide, refer to the rustdoc for
+traits.rs
+and the example precompiles in
+precompiles/examples
+.
+hashtag
+Guest-Side Development
+The developer work involved with creating a guest-side interface for a precompile is minimal: the developer only needs to write a single function that provides idiomatic access to the precompile’s functionality. This function has to be defined by a macro for code-generation reasons (only upon compilation will the precompile’s opcode be calculated) but is otherwise a simple wrapper around the precompile’s raw instruction.
+As a concrete example, consider a simple hash. The host-side implementation and macro might write a function like the following:
+Where
+emit_instruction
+computes the hash of
+rs2
+bytes starting at memory address
+rs1
+and writes it to
+rd
+. We don’t want guest program developers to have any awareness of how the underlying instruction works, so the precompile developer would write a macro like the following:
+Then, when the guest program developer wants to use the precompile, their
+use_precompiles!
+macro will automatically call the
+generate_instruction_caller!
+macro, which will generate an ad-hoc
+HashCaller
+trait implementation for the precompile’s instruction. The guest program developer can then use the precompile like this:
+Which is exactly the kind of experience we set out to provide for guest program developers.
+Previous
+Runtime
+chevron-left
+Next
+Benchmarking
+chevron-right
+
+════════════════════════════════════════════════════════════
+End of document
+════════════════════════════════════════════════════════════

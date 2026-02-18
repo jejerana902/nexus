@@ -1,0 +1,301 @@
+════════════════════════════════════════════════════════════
+URL: https://docs.nexus.xyz/zkvm/development/benchmarking
+Title: Benchmarking | zkVM | Nexus Docs
+Scraped: 2026-01-30 09:47:32 UTC
+════════════════════════════════════════════════════════════
+
+Copy
+#
+Arrays for input and output
+public_inputs
+=
+(
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+)
+public_outputs
+=
+(
+1
+1
+2
+3
+5
+8
+13
+21
+34
+55
+89
+144
+233
+377
+610
+987
+1597
+2584
+4181
+6765
+)
+#
+Loop through the arrays
+for
+i
+in
+"${
+!
+public_inputs
+[
+@
+]}"
+;
+do
+public_input
+=
+"${
+public_inputs
+[
+$i
+]}"
+public_output
+=
+"${
+public_outputs
+[
+$i
+]}"
+echo
+"
+Running with PUBLIC_INPUT=
+$public_input
+and PUBLIC_OUTPUT=
+$public_output
+"
+#
+Run the Rust program with environment variables set
+#
+Ensure the Rust program is built in release mode
+PUBLIC_INPUT
+=
+$public_input PUBLIC_OUTPUT
+=
+$public_output
+cargo
+run
+--release
+echo
+"
+----------------------------------------
+"
+done
+Results (units in milliseconds)
+n-th Fibonacci
+Compile (ms)
+Prove (ms)
+Verify (ms)
+Total Time (ms)
+Proof size (bytes)
+0
+161
+1592
+11
+1764
+51968
+1
+149
+1522
+11
+1684
+51968
+2
+148
+1514
+11
+1675
+51968
+3
+151
+1538
+11
+1701
+51440
+5
+151
+1477
+12
+1641
+51968
+8
+128
+1465
+11
+1606
+46008
+13
+136
+1454
+11
+1602
+49304
+21
+138
+1440
+12
+1591
+49880
+34
+149
+1551
+12
+1713
+51968
+55
+149
+1422
+13
+1584
+51440
+89
+151
+1432
+12
+1596
+51440
+144
+153
+1427
+11
+1593
+49460
+233
+149
+1434
+12
+1596
+50384
+377
+138
+1417
+11
+1567
+50368
+610
+148
+1453
+11
+1613
+51968
+987
+150
+1510
+12
+1673
+49280
+1597
+149
+1443
+11
+1604
+50384
+2584
+146
+1460
+13
+1620
+50864
+4181
+147
+1449
+11
+1610
+51968
+6765
+149
+1440
+11
+1602
+51968
+Observation: Proving time is roughly constant for the first 20 Fibonacci numbers — likely because zkVM setup overhead dominates while the actual Fibonacci computation is still small.
+Larger inputs (around the 200th Fibonacci)
+n-th Fibonacci
+Compile (ms)
+Prove (ms)
+Verify (ms)
+Total Time (ms)
+Proof size (bytes)
+200
+156
+17416
+189
+17762
+58544
+201
+154
+17179
+183
+17518
+59904
+202
+152
+17468
+183
+17804
+59248
+204
+158
+17238
+181
+17579
+59248
+205
+151
+17242
+184
+17579
+57920
+Observation: Proving time increases substantially with input size, while verification time remains small compared to proving time.
+1
+hashtag
+Optimize Guest Programs
+Focus on minimizing RISC-V cycles in guest programs. The benchmark shows the number of RISC-V cycles directly impacts proving time, which is the dominant component of total execution time.
+2
+hashtag
+Consider Algorithmic Efficiency
+For computationally demanding scenarios, prioritize efficient algorithms and implementations. The Fibonacci example demonstrates how complexity can rapidly increase proving time.
+3
+hashtag
+Profile Regularly
+Regularly profile Nexus zkVM projects to identify performance bottlenecks and optimization opportunities.
+circle-info
+Note: Verification time remains negligible in these benchmarks compared to proving time; optimizing the proving workload yields the largest gains.
+Related links:
+https://docs.nexus.xyz/zkvm/proving/precompiles
+https://docs.nexus.xyz/zkvm/walkthroughs/galeshapley
+Previous
+Precompiles
+chevron-left
+Next
+Use Case: Stable Matching
+chevron-right
+
+════════════════════════════════════════════════════════════
+End of document
+════════════════════════════════════════════════════════════

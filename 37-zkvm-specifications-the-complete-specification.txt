@@ -1,0 +1,46 @@
+════════════════════════════════════════════════════════════
+URL: https://docs.nexus.xyz/zkvm/specifications/the-complete-specification
+Title: The Complete Specification | zkVM | Nexus Docs
+Scraped: 2026-01-30 09:47:32 UTC
+════════════════════════════════════════════════════════════
+
+The Nexus zkVM 3.0 Specification provides an overview of the runtime and machine architecture of the zkVM, as well as a full, formal description of the constraints and proving integration.
+In this Specifications section, we provide accessible introductions to some of the core concepts from the specification.
+Title
+Home
+Target
+https://docs.nexus.xyz/home
+Title
+Nexus Layer 1 — Overview
+Target
+https://docs.nexus.xyz/layer-1/vision/overview
+Title
+Nexus zkVM
+Target
+The Nexus zkVM
+Title
+Web3 Fundamentals — Overview
+Target
+https://docs.nexus.xyz/essentials/web3-fundamentals/overview
+Title
+Use Case: Program Execution
+Target
+Use Case: Program Execution
+Title
+Machine Architecture
+Target
+Machine Architecture
+Title
+Full zkVM Specification: zkVM Overview
+Target
+The Complete Specification
+Previous
+Use Case: Program Execution
+chevron-left
+Next
+Machine Architecture
+chevron-right
+
+════════════════════════════════════════════════════════════
+End of document
+════════════════════════════════════════════════════════════

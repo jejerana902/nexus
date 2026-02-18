@@ -1,0 +1,106 @@
+════════════════════════════════════════════════════════════
+URL: https://docs.nexus.xyz/zkvm/specifications/machine-architecture
+Title: Machine Architecture | zkVM | Nexus Docs
+Scraped: 2026-01-30 09:47:32 UTC
+════════════════════════════════════════════════════════════
+
+The primary use of the Nexus zkVM machine architecture is to support the verifiable computation of the full zkVM. However, it is a well-defined virtual machine in its own right, and some of its key components are described below.
+hashtag
+Architectural overview
+The machine architecture is built around an instruction set, not the same as, but close enough to the RISC-V RV32I instruction set. The primary difference is the lack of a few supported instructions, such as
+fence
+and
+ebreak
+. The machine uses a modified Harvard architecture in which the program, data, and input-output memory segments are distinct and permissioned with respect to whether they can be read from, written to, or both.
+hashtag
+Execution Model
+The Nexus zkVM is designed around a “only prove what you use” memory architecture, where unused memory does not need to be proven. As a trade-off, the zkVM requires that the amounts of memory used by most of the program segments (all but the heap) must be known before execution — even though the sizes of the stack and output are often execution-dependent.
+To avoid this chicken-and-egg problem, the machine architecture operates on a two-pass tracing model: the program is first executed in a (mostly) traditional Harvard architecture, and statistics are kept as to the resultant memory usage. The guest program is then executed again using the same inputs in a modified Harvard architecture with a fixed-memory organization determined from the statistics of the first execution, which is more conducive to proving.
+hashtag
+Execution Environment
+Through environment calls the guest program can interact with the execution environment. The machine architecture supports six environment calls. Two of these calls are used for debugging (logging) and optimization (cycle counting), and these are no-ops during the second, proven tracing. The other four are used for setting up stack and heap pointers in the second, fixed memory model, as well as for reading off the private input tape and exiting the guest program, analogous to the exit system calls (like Rust’s
+std::process::exit(code: i32) -> !}
+provided by most programming languages).
+hashtag
+Memory Layout
+The machine architecture uses distinct component memories. Each memory has three attributes: in which address space it exists, with what permission structure (read-write, read-only, write-only, or no access), and whether it is of fixed or variable size.
+For the first pass, the organization of the memory is a mostly traditional Harvard architecture, with five distinct address spaces:
+(i) the cpu registers,
+(ii) the public input,
+(iii) the error code and public output,
+(iv) the associated data, and
+(v) the RAM containing both the program and data segments (including the stack and heap).
+Other than the joining of the program and data memories this forms a relatively traditional Harvard architecture. In terms of permissions and sizes:
+(i) is read-write and fixed,
+(ii) is read-only and fixed,
+(iii) is write-only and variable,
+(iv) is no-access and fixed, and
+(v) is variable and mixed read-only (for static global variables) and read-write (for the remaining global variables and the entire data memory).
+For (v) the guest program itself has no access to its instructions: they can only be accessed by the CPU.
+For the second tracing pass, the memories are combined into a fixed-size, linear memory layout with one single, unified address space. As this is the memory layout used in tracing, the zkVM is best understood as a modified Harvard architecture, as the permission structures on the segments are maintained but they no longer exist in distinct memories. Also, a small additional read-only 8-byte segment containing well-known location pointers is introduced to enable the runtime to successfully access the now relocated public input and output segments.
+hashtag
+Registers
+The zkVM machine has 32 registers that hold 32-bit word values. When tracing the program the zkVM stores the state of the registers separate from its record of memory operations. However, it also reserves the addresses
+0x00-0x7F
+so that prover integrations are able to identify the registers with those addresses should the prover need to consider the entire state of the machine to lie within a single address space.
+hashtag
+Well-Known Location Pointers
+When tracing, the machine architecture also reserves two words of memory, the first from
+0x80-0x83
+and the second from
+0x84-0x87
+, which contain pointers to other memory locations for use by the runtime to manage input and output handling. These pointers existing in a well-known location for the runtime to access enables the zkVM to dynamically situate the input and output memory segments within the unified, linear architecture while still allowing the guest program easy access to their contents.
+hashtag
+Program Memory
+The zkVM executes a guest program encoded in an ELF binary. The core of such a binary is the program consisting of a sequence of instructions and supporting read-only data (such as that contained in the
+.rodata
+segment). Before the zkVM executes the guest, this data must be loaded into a read-only segment of program memory, and after that remains unchanged during execution.
+Additionally, the binary may contain read-write segments, such as the
+.bss
+and
+.data
+segments commonly used by programming languages to store global variables. Being writable, these segments must also be private over the course of the execution post-initialization. As such, the machine functionally treats these segments as a small part of the RAM that is non-contiguous with it, but with additional constraints to guarantee they are initialized as specified in the binary.
+To simplify management of the dual-nature of these segments as both part of the program but also writable, the zkVM keeps the program memory and data memory in the same address space during the first-pass tracing, but with distinct permissions for the writable vs. read-only components. Those permissions are maintained in the unified address space of the linear memory model used in the second pass.
+hashtag
+Public Input
+The public input segment contains an input of length
+n
+bytes prefaced by a four-byte (one 32-bit word) segment
+n
+so that the guest program can determine the length of the input made available to it. To read from the input the runtime invokes a custom instruction
+rin
+. During the second tracing pass — which is the one proven —
+rin
+is treated as a pseudoinstruction equivalent to
+lb
+, and the offset is loaded from the first word of the well-known segment (addresses
+0x80-0x83
+in the unified address space of the linear memory model). During both tracing passes, the contents of the segment are read-only — the zkVM will halt if an attempt is made by the guest program to write to those memory segments.
+hashtag
+Associated Data
+For many zkVM use cases it can be useful to be able to bind arbitrary contextual information about an execution or the context of the proving into the proof itself. For example, from the perspective of the zkVM the program is just a compiled binary. By incorporating the hash of the program as originally written in a high-level language — such as Rust or Python — the proof can carry a reference to that code for use by the verifier, such as for auditing its functional correctness or the correctness of its compilation. In the particular case where the program forms a standalone software package, such as a Cargo crate or Python wheel, then binding in the hash of that package can even relate the proof to the broader software ecosystem.
+To support binding arbitrary external information into the proof, the machine architecture contains an associated data memory segment that the prover can populate with an arbitrary bytestring. This segment is no-access within the Harvard architecture — it can neither be written to nor read from during an execution. But, the verifier otherwise treats it as a public input segment with checked contents that can then be used post-verification for application-focused infrastructure built on top of the proof, such as the aforementioned auditing. The associated data is placed before the public output and exit code, so that the memory regions after it form a contiguous space of writable segments.
+hashtag
+Public Output
+The public output and exit code work in much the same way as the public input, except the relevant custom instruction is
+wou
+— interpreted on the second pass as
+sb
+— and the offset is loaded from the second word of the well-known segment (addresses
+0x84-0x87
+in the unified address space of the linear memory model). Otherwise, the most significant difference is that the single-word exit code segment and the public output segment are write-only, rather than read-only.
+During the first tracing pass the public output segment can grow arbitrarily (up to addressing limits) to support additional written output. The length of the resultant output is then reserved ahead of time for the memory segment for the second and proven tracing pass.
+hashtag
+Data Memory
+The zkVM includes a RAM. Instructions can read from the data memory, write to the data memory, or leave the data memory untouched. The primary use of the data memory is to store the stack and the heap.
+During the first tracing pass, its size is variable and the stack and heap grow towards each other, as is standard. During the second tracing pass the stack and heap still grow towards each other, but are given fixed-size segments within which to do so. As a consequence, the size of the data memory is limited to only what is needed, enabling quicker proving and smaller proofs in the zkVM as only memory that is used is “paid for” by needing to prove its contents.
+Previous
+The Complete Specification
+chevron-left
+Next
+Proving Instructions
+chevron-right
+
+════════════════════════════════════════════════════════════
+End of document
+════════════════════════════════════════════════════════════

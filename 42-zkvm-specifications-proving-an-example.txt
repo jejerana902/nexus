@@ -1,0 +1,314 @@
+════════════════════════════════════════════════════════════
+URL: https://docs.nexus.xyz/zkvm/specifications/proving-an-example
+Title: Proving — An Example | zkVM | Nexus Docs
+Scraped: 2026-01-30 09:47:32 UTC
+════════════════════════════════════════════════════════════
+
+In order to illustrate how these different components work together, let us consider an example in which the program counter pc points to memory location 0x00000004, containing the binary encoding of the instruction
+ADDI x10 x8 3
+. Moreover, for the sake of this example, let us assume the following about the state of the VM.
+Current clock cycle: 256
+Current trace row: 255
+Total number of rows: 2^16
+R[x8] = 0x000000FF was last updated with timestamp 323
+R[x10] = 0x00000005 was last updated with timestamp 77
+Prog[0x00000004] has been accessed 222 times before the current clock cycle
+In the following we describe the relevant trace columns associated with each component, their expected values at row 255 associated with the current clock cycle 256, and the associated constraints that they must satisfy.
+hashtag
+CPU Component Trace Columns and Constraints
+In order to verify the correct execution of the
+ADDI x10 x8 3
+instruction at clock cycle 256, the CPU component will perform the following operations:
+Ensure a correct state transition;
+Fetch the instruction
+ADDI x10 x8 3
+from the program memory component;
+Decode the contents of the instruction and check the correctness of its format;
+Read contents of register x8 from the register memory component;
+Interact with the execution component to execute the instruction
+ADDI x10 x8 3
+; and
+Update the contents of register x10 based on the output of the execution component.
+Let us now show how each of these operations is performed.
+hashtag
+Ensuring a Correct State Transition
+The CPU component ensures the state transition is performed correctly to guarantee correct ordering of instructions. It performs these checks:
+1
+hashtag
+Verify program counter continuity
+Verify that the program counter in the present row matches the value of the next program counter from the preceding row (accounting for limb decomposition).
+Transition constraints (comparing two limbs at a time):
+(1 - is_first[i]) * (1 - is_pad[i]) * (pc(1)[i] + pc(2)[i] * 2^8 - pc_next(1)[i-1] - pc_next(2)[i-1] * 2^8) = 0
+(1 - is_first[i]) * (1 - is_pad[i]) * (pc(3)[i] + pc(4)[i] * 2^8 - pc_next(3)[i-1] - pc_next(4)[i-1] * 2^8) = 0
+For our concrete state at row 255:
+i = 255
+pc(1)[255] = 0x04, pc(2)[255] = 0x00, pc(3)[255] = 0x00, pc(4)[255] = 0x00
+is_pad[255] = 0, is_first[255] = 0
+Therefore pc_next limbs on row 254 must equal 0x04, 0x00, 0x00, 0x00 respectively.
+2
+hashtag
+Check clock update correctness
+Transition constraints for clk[i] for row i > 0:
+Use clk_carry(1), clk_carry(2) for carries.
+Adding two limbs at a time:
+clk(1)[i] + clk(2)[i] * 2^8 + clk_carry(1)[i] * 2^16 = clk(1)[i-1] + clk(2)[i-1] * 2^8 + 1
+clk(3)[i] + clk(4)[i] * 2^8 + clk_carry(2)[i] * 2^16 = clk(3)[i-1] + clk(4)[i-1] * 2^8 + clk_carry(1)[i]
+Enforce clk_carry(j) in {0,1} via (clk_carry(j))*(1 - clk_carry(j)) = 0
+Range-check clk(j) ∈ [0, 2^8 - 1] for each limb.
+For our state, to increment clock from 255 → 256 it must hold that on row 254:
+clk(1)[254] = 0xFF, clk(2)[254] = 0x00, clk(3)[254] = 0x00, clk(4)[254] = 0x00
+clk_carry(1)[255] = 0, clk_carry(2)[255] = 0
+3
+hashtag
+Prevent padding rows from being followed by non-padding rows
+Enforce: (1 - is_first[i]) * (1 - is_pad[i]) * (is_pad[i-1]) = 0
+With is_pad[255] = 0 and is_first[255] = 0, this implies is_pad[254] = 0.
+hashtag
+Fetching the Instruction
+The CPU must read the instruction stored at the memory location pointed by pc and ensure pc is memory-aligned (multiple of 4).
+Remark: Whenever constraints involve columns restricted to the same row, we omit explicit [i] index for readability (values below apply to row 255 unless otherwise noted).
+The CPU interaction with program memory is captured by ReadProg interface with parameters (pc, clk) to obtain instr_val. In the trace, instr_val and pc are shared between CPU and program memory.
+As a result at row 255:
+instr_val(1) = Prog[0x00000004] = 0b00010011
+instr_val(2) = Prog[0x00000005] = 0b00000101
+instr_val(3) = Prog[0x00000006] = 0b00110100
+instr_val(4) = Prog[0x00000007] = 0b00000000
+Binary encoding breakdown for
+ADDI x10 x8 3
+:
+Bits 0–6: 0b0010011 (ADDI constant)
+Bits 7–11: 0b01010 → destination register x10 (op_a)
+Bits 12–14: 0b000 (ADDI constant)
+Bits 15–19: 0b01000 → source register x8 (op_b)
+Bits 20–31: 0b000000000011 → immediate 3 (op_c)
+Memory alignment constraint for pc:
+pc_aux(1) * 4 - pc(1) = 0
+pc_aux(1) ∈ [0, 2^6 - 1]
+For this example, set pc_aux(1) = 0x01 to show pc is multiple of 4.
+hashtag
+Decoding the Instruction
+The prover provides auxiliary values (advices) to help verify the binary encoding:
+op_a = destination register (10)
+op_b = source register (8)
+op_c = immediate (3)
+op_b_flag = 1 (operand b used)
+imm_c = 1 (operand c is immediate)
+is_add = 1 (selector for ADD/ADDI)
+is_alu_imm_no_shift = 1
+is_type_i = 1
+is_pad = 0, is_first = 0, is_last = 0
+Operand decomposition advices (bits split across limbs):
+op_a0 = 0 (bit 0 of op_a)
+op_a1_4 = 5 (bits 1–4 of op_a)
+op_b0 = 0 (bit 0 of op_b)
+op_b1_4 = 4 (bits 1–4 of op_b)
+op_c0_3 = 3 (bits 0–3 of op_c)
+op_c4_7 = 0 (bits 4–7 of op_c)
+op_c8_10 = 0 (bits 8–10 of op_c)
+op_c11 = 0 (bit 11 of op_c)
+Convert the numbered set of constraints used to validate decoding into steps:
+1
+hashtag
+1) Exactly one instruction or padding flag is set
+Enforce sum of instruction flags + is_pad = 1. Since is_add = 1, all other flags are 0.
+2
+hashtag
+2) op_b_flag correctness
+Enforce op_b_flag = 1 for all instructions except {LUI, AUIPC, JAL, UNIMP}. This is satisfied by is_add = 1 and op_b_flag = 1.
+3
+hashtag
+3) imm_c correctness
+Enforce imm_c = 1 for all non-ALU instructions (constraint used to ensure correctness across instruction types). Given imm_c = 1 in our example, constraints are satisfied.
+4
+hashtag
+4) Match instruction flag with opcode
+For ADD/ADDI: (is_add) * (opcode - ADD) = 0. With is_add = 1 and opcode set to ADD constant, satisfied.
+5
+hashtag
+5) ALU flags grouping
+Define aggregated flags:
+is_alu = sum of ALU instruction selectors
+is_alu_imm_shift = imm_c * (is_sll + is_srl + is_sra)
+is_alu_imm_no_shift = imm_c * (is_add + is_slt + is_sltu + is_xor + is_or + is_and)
+is_type_i_no_shift = is_load + is_alu_imm_no_shift + is_jalr
+is_type_i = is_load + is_alu_imm_no_shift + is_alu_imm_shift + is_jalr
+With is_add = 1 and imm_c = 1 we get:
+is_alu = 1
+is_alu_imm_shift = 0
+is_alu_imm_no_shift = 1
+is_type_i_no_shift = 1
+is_type_i = 1
+6
+hashtag
+6) Operand decomposition consistency and range checks
+Ensure op_a0 + op_a1_4 * 2 - op_a = 0 (when is_type_i_no_shift = 1)
+Range-check op_a0 is binary, op_a1_4 ∈ [0, 2^4 - 1]
+Ensure op_b0 + op_b1_4 * 2 - op_b = 0
+Range-check op_b parts
+Ensure op_c0_3 + op_c4_7 * 2^4 + op_c8_10 * 2^8 + op_c11 * 2^11 - op_c = 0
+Range-check op_c parts
+With provided operand parts and is_type_i_no_shift = 1, these constraints hold for the example.
+7
+hashtag
+7) Sign-extension for operand c
+Compute c_val from op_c using sign-extension constraints across limbs. Since op_c11 = 0, higher limbs become 0. Prover sets:
+c_val(1) = 0x03
+c_val(2) = 0x00
+c_val(3) = 0x00
+c_val(4) = 0x00
+8
+hashtag
+8) Instruction format checks across limbs
+Limb 1: (is_alu_imm_no_shift) * (0b0010011 + op_a0 * 2^7 - instr_val(1)) = 0
+Limb 2: (is_add) * (imm_c) * (op_a1_4 + 0b000 * 2^4 + op_b0 * 2^7 - instr_val(2)) = 0
+Limb 3: (is_type_i_no_shift) * (op_b1_4 + op_c0_3 * 2^4 - instr_val(3)) = 0
+Limb 4: (is_type_i_no_shift) * (op_c4_7 + op_c8_10 * 2^4 + op_c11 * 2^7 - instr_val(4)) = 0
+With the previously set flags and operand parts, these constraints are satisfied for the given instr_val limbs.
+hashtag
+Reading the Contents of Register x8
+The interaction with register memory is captured by ReadReg interface with parameters (op_b, clk, 1) where 1 indicates this is source register reg1. In the trace, fields are shared between CPU and register memory.
+As a result of the interaction:
+reg1_addr = op_b
+b_val limbs are set equal to reg1_val_cur limbs
+Given the assumption R[x8] = 0x000000FF before execution, the limbs are:
+b_val(1) = reg1_val_cur(1) = 0xFF
+b_val(2) = reg1_val_cur(2) = 0x00
+b_val(3) = reg1_val_cur(3) = 0x00
+b_val(4) = reg1_val_cur(4) = 0x00
+hashtag
+Executing the Instruction
+The CPU calls the execution component via exec(pc, opcode, a_val, b_val, c_val) to obtain pc_next. For ADD, execution updates a_val.
+After execution (ADDI x10 x8 3 → x10 := x8 + 3), the limbs are set as:
+a_val(1) = 0x02
+a_val(2) = 0x01
+a_val(3) = 0x00
+a_val(4) = 0x00
+pc is incremented by 4, so:
+pc_next(1) = 0x08
+pc_next(2) = 0x00
+pc_next(3) = 0x00
+pc_next(4) = 0x00
+(These a_val limbs follow from b_val = 0x000000FF and c_val = 0x00000003.)
+hashtag
+Updating the contents of register x10
+To ensure x0 stays zero, CPU computes a_val_effective:
+a_val_effective = a_val when op_a ≠ 0, otherwise 0.
+Use auxiliary a_val_effective_flag and supporting auxiliaries to enforce this (including multiplicative inverse aux variables).
+Enforce a_val_effective_flag ∈ {0,1} and relation a_val(limb) * a_val_effective_flag = a_val_effective(limb).
+For op_a = x10 (non-zero) the prover sets:
+a_val_effective_flag = 1
+a_val_effective_flag_aux = 1 (non-zero aux)
+a_val_effective_flag_aux_inv = appropriate inverse
+a_val_effective(limbs) = a_val(limbs) = 0x02, 0x01, 0x00, 0x00 respectively
+Then CPU interacts with register memory via WriteReg(op_a, a_val_effective, clk, 3) to write to reg3 (destination). As a result reg3_val_cur limbs (for reg3_addr = op_a = x10) become:
+reg3_val_cur(1) = 0x02
+reg3_val_cur(2) = 0x01
+reg3_val_cur(3) = 0x00
+reg3_val_cur(4) = 0x00
+hashtag
+Execution Component Trace Columns and Constraints
+To verify the ADD execution, the execution component enforces carry-handling constraints across limbs and that helper carries are binary.
+Carry handling for ADD (per limb):
+(is_add) * (op_a_val(1) + h_carry(1) * 2^8 - op_b_val(1) - op_c_val(1)) = 0
+(is_add) * (op_a_val(2) + h_carry(2) * 2^8 - op_b_val(2) - op_c_val(2) - h_carry(1)) = 0
+(is_add) * (op_a_val(3) + h_carry(3) * 2^8 - op_b_val(3) - op_c_val(3) - h_carry(2)) = 0
+(is_add) * (op_a_val(4) + h_carry(4) * 2^8 - op_b_val(4) - op_c_val(4) - h_carry(3)) = 0
+And enforce (is_add) * h_carry(j) * (1 - h_carry(j)) = 0 for each helper carry.
+Given b_val = 0x000000FF and c_val = 0x00000003, to satisfy these constraints:
+a_val limbs = 0x02, 0x01, 0x00, 0x00
+h_carry(1) = 1, h_carry(2) = 0, h_carry(3) = 0, h_carry(4) = 0
+Next, execution determines whether pc is incremented by 4 (is_pc_inc_std). It enforces:
+(is_alu + is_load + is_type_s + is_type_u + is_type_sys * (1 - is_sys_halt) - is_pc_inc_std) = 0
+If is_pc_inc_std = 1 then pc_next must equal pc + 4, handled limb-wise with pc_carry auxiliaries:
+(is_pc_inc_std) * (pc_next(1) + pc_next(2) * 2^8 + pc_carry(1) * 2^16 - pc(1) - pc(2) * 2^8 - 4) = 0
+(is_pc_inc_std) * (pc_next(3) + pc_next(4) * 2^8 + pc_carry(2) * 2^16 - pc(3) - pc(4) * 2^8 - pc_carry(1)) = 0
+Enforce pc_carry(j) binary via (is_pc_inc_std) * pc_carry(j) * (1 - pc_carry(j)) = 0
+For pc = 0x00000004, this yields pc_next = 0x00000008 and pc_carry(1) = pc_carry(2) = 0.
+hashtag
+Program Memory Component Trace Columns and Constraints
+The program memory component uses offline memory checking (simplified for read-only memory) with a counter per memory cell tracking read counts. Trace elements include:
+pc (word-aligned base address for instruction)
+instr_val(1..4): instruction word bytes at pc, pc+1, pc+2, pc+3
+prog_ctr_prev (4 limbs): previous counter for base address pc
+prog_ctr_cur (4 limbs): current counter for base address pc
+prog_read_digest: digest of read set (logup)
+prog_write_digest: digest of write set (logup)
+Actions per read:
+Check counter update correctness
+Verify read/write set digests updated correctly
+hashtag
+Enforcing correct update of access counters
+Enforce prog_ctr_cur = prog_ctr_prev + 1 using prog_ctr_carry auxiliaries across limbs. Carry bits must be binary.
+Given Prog[0x00000004] was accessed 222 times before current clock, set:
+prog_ctr_prev = 222 → limbs: prog_ctr_prev(1) = 2, prog_ctr_prev(2..4) = 0
+prog_ctr_cur = 223 → limbs: prog_ctr_cur(1) = 3, prog_ctr_cur(2..4) = 0
+prog_ctr_carry(1..4) = 0
+hashtag
+Enforcing correct update of read- and write-set digests
+Let fp(pc, instr_val, prog_ctr) be a fingerprint function (uses verifier-chosen β). Using random α chosen by verifier, enforce transition constraints for i > 0:
+prog_read_digest[i] - prog_read_digest[i-1] = 1 / (fp(pc[i], instr_val[i], prog_ctr_prev[i]) + α)
+prog_write_digest[i] - prog_write_digest[i-1] = 1 / (fp(pc[i], instr_val[i], prog_ctr_cur[i]) + α)
+For row 255 with known pc and instr_val limbs, these constraints must hold with the corresponding prog_ctr_prev and prog_ctr_cur.
+Remark: instr_val, prog_ctr_prev and prog_ctr_cur limbs also have range checks in the formal spec; the values above satisfy those ranges.
+hashtag
+Register Memory Component Trace Columns and Constraints
+The register memory component uses offline memory checking for read/write memory and associates a timestamp per cell. It also uses logups for read/write set digest consistency. Each access maintains tuples of (reg_addr, reg_val_prev, reg_val_cur, reg_ts_prev, reg_ts_cur). Up to three register addresses can be accessed in one execution cycle; the trace contains three such sets.
+Trace elements include:
+clk
+reg1_addr, reg2_addr, reg3_addr
+reg1_val_cur, reg2_val_cur, reg3_val_cur (32-bit values)
+reg1_ts_cur, reg2_ts_cur, reg3_ts_cur (current timestamps)
+reg1_val_prev, reg2_val_prev, reg3_val_prev
+reg1_ts_prev, reg2_ts_prev, reg3_ts_prev
+reg_read_digest, reg_write_digest
+reg1_accessed, reg2_accessed, reg3_accessed flags (indicate whether each set is used)
+Register memory enforces:
+Current timestamps for reg1/2/3 satisfy:
+reg1_ts_cur = 3 * clk - 2
+reg2_ts_cur = 3 * clk - 1
+reg3_ts_cur = 3 * clk
+Previous timestamps precede current timestamps:
+regj_ts_prev ∈ {0, …, regj_ts_cur - 1}
+Read/write digest updates via logup contributions (described below).
+Remark: reg1_addr, reg2_addr, reg3_addr should be accessed in order and only reg3_addr can be modified during a clock cycle.
+hashtag
+Enforcing the Correct Update of Read- and Write-Set Digests (Registers)
+Let fp(reg_addr, reg_val, reg_ts) be a fingerprint function (uses verifier-chosen β). For row index i > 0 and random α:
+reg_read_digest[i] - reg_read_digest[i-1] = reg1_accessed[i] / (fp(reg1_addr[i], reg1_val[i], reg1_ts_prev[i]) + α)
+reg2_accessed[i] / (fp(reg2_addr[i], reg2_val[i], reg2_ts_prev[i]) + α)
+reg3_accessed[i] / (fp(reg3_addr[i], reg3_val[i], reg3_ts_prev[i]) + α)
+reg_write_digest[i] - reg_write_digest[i-1] = reg1_accessed[i] / (fp(reg1_addr[i], reg1_val[i], reg1_ts_cur[i]) + α)
+reg2_accessed[i] / (fp(reg2_addr[i], reg2_val[i], reg3_ts_cur[i]) + α)
+reg3_accessed[i] / (fp(reg3_addr[i], reg3_val[i], reg3_ts_cur[i]) + α)
+For this example, the assumptions and derived values for row 255 are:
+R[x8] = 0x000000FF with last timestamp 323
+R[x10] = 0x00000005 with last timestamp 77
+clk[255] = 256
+reg1_ts_cur[255] = 3 * 256 - 2 = 766
+reg3_ts_cur[255] = 3 * 256 = 768
+reg1_accessed[255] = 1, reg2_accessed[255] = 0, reg3_accessed[255] = 1
+R[x10] updated to 0x00000102 at current clock
+To satisfy logup constraints at i = 255, the following must be set consistently (limb decompositions shown):
+reg1_ts_prev[255] limbs: (1) = 32, (2..4) = 0
+reg1_val_prev[255] = reg1_val_cur[255] = 0xFF, 0x00, 0x00, 0x00
+reg1_ts_cur[255] limbs: (1) = 254, (2) = 2, (3..4) = 0 (representation of 766)
+reg3_ts_prev[255] limbs: (1) = 7, (2..4) = 0
+reg3_val_prev[255] limbs: 0x05, 0x00, 0x00, 0x00
+reg3_ts_cur[255] limbs: (1) = 0, (2) = 3, (3..4) = 0 (representation of 768)
+reg3_val_cur[255] limbs: 0x02, 0x01, 0x00, 0x00
+With these values, the register read/write digest transition constraints hold for the example.
+References (kept intact):
+Proving Memory: https://docs.nexus.xyz/zkvm/specifications/memory-checking
+Proving Instructions: https://docs.nexus.xyz/zkvm/specifications/instructions
+Licensing: https://docs.nexus.xyz/zkvm/license
+(End of cleaned/import-optimized page content.)
+Previous
+Proving Memory
+chevron-left
+Next
+Licensing
+chevron-right
+
+════════════════════════════════════════════════════════════
+End of document
+════════════════════════════════════════════════════════════

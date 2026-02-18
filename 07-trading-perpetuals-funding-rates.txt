@@ -1,0 +1,261 @@
+════════════════════════════════════════════════════════════
+URL: https://docs.nexus.xyz/trading/perpetuals/funding-rates
+Title: Funding Rates | Nexus Docs
+Scraped: 2026-01-30 09:47:32 UTC
+════════════════════════════════════════════════════════════
+
+Funding rates are a core mechanism in perpetual futures markets designed to keep the price of the perpetual contract aligned with its underlying spot index. On Nexus, funding is computed and settled natively inside the
+NexusCore
+DEX co-processor, ensuring deterministic, transparent, and protocol-level enforcement of payments between longs and shorts.
+hashtag
+How Funding Works
+Funding reflects the
+basis
+between the perpetual mid-price and the underlying index price:
+Positive funding
+→ longs pay shorts
+Negative funding
+→ shorts pay longs
+Each market displays its current hourly funding rate at the top of the trading interface.
+hashtag
+Timing and Frequency
+Nexus uses the EVM block height schedule to approximate hourly funding intervals during the DEX Alpha. As the network progresses through mainnet phases, the cadence becomes increasingly consistent due to more stable block timing and a maturing dual-block architecture.
+Funding accrues continuously throughout the hour
+Settlement occurs at the end of each hourly window
+All calculations and settlements occur within NexusCore.
+hashtag
+Implementation
+The Nexus DEX funding mechanism charges roughly every hour, with the calculation period spanning the full hour and settlement occurring at the end of each hour.
+In the DEX Alpha funding occurs roughly every 4 hours.
+Basis Calculation
+The system calculates the basis (premium or discount) by comparing the market's mid-price (average of best bid and ask) with the underlying spot price provided by the Nexus Oracle System.
+b
+a
+s
+i
+s
+=
+mid_price
+−
+spot_price
+spot_price
+basis = \frac{\text{mid\_price} - \text{spot\_price}}{\text{spot\_price}}
+ba
+s
+i
+s
+=
+spot_price
+mid_price
+−
+spot_price
+​
+These samples are taken at fixed intervals to capture representative market conditions.
+Rate Determination
+At the end of each hour, the collected basis measurements are averaged to form the hourly rate.
+For positive rates:
+r
+a
+t
+e
+=
+m
+i
+n
+⁡
+(
+c
+l
+a
+m
+p
+(
+a
+v
+e
+r
+a
+g
+e
+_
+b
+a
+s
+i
+s
+)
++
+b
+a
+s
+e
+l
+i
+n
+e
+_
+r
+a
+t
+e
+,
+c
+a
+p
+)
+rate=min⁡(clamp(average\_basis)+baseline\_rate,cap)
+r
+a
+t
+e
+=
+min
+⁡
+(
+c
+l
+am
+p
+(
+a
+v
+er
+a
+g
+e
+_
+ba
+s
+i
+s
+)
++
+ba
+se
+l
+in
+e
+_
+r
+a
+t
+e
+,
+c
+a
+p
+)
+For negative rates:
+r
+a
+t
+e
+=
+m
+a
+x
+⁡
+(
+c
+l
+a
+m
+p
+(
+a
+v
+e
+r
+a
+g
+e
+_
+b
+a
+s
+i
+s
+)
++
+b
+a
+s
+e
+l
+i
+n
+e
+_
+r
+a
+t
+e
+,
+−
+c
+a
+p
+)
+rate=max⁡(clamp(average\_basis)+baseline\_rate,−cap)
+r
+a
+t
+e
+=
+ma
+x
+⁡
+(
+c
+l
+am
+p
+(
+a
+v
+er
+a
+g
+e
+_
+ba
+s
+i
+s
+)
++
+ba
+se
+l
+in
+e
+_
+r
+a
+t
+e
+,
+−
+c
+a
+p
+)
+Settlement Logic
+Funding payments are exchanged between longs and shorts based on the final computed rate:
+Positive Funding (Market Trading Above Index)
+Longs pay shorts proportional to position size, rate, and index price
+Negative Funding (Market Trading Below Index)
+Shorts pay longs using the same proportional model
+All settlements occur atomically within the Core block processing the end-of-interval boundary.
+Previous
+Positions
+chevron-left
+Next
+Liquidations
+chevron-right
+Last updated
+2 months ago
+
+════════════════════════════════════════════════════════════
+End of document
+════════════════════════════════════════════════════════════

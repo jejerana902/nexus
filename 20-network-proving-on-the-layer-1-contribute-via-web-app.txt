@@ -1,0 +1,73 @@
+════════════════════════════════════════════════════════════
+URL: https://docs.nexus.xyz/network/proving-on-the-layer-1/contribute-via-web-app
+Title: Contribute via Web App | Network | Nexus Docs
+Scraped: 2026-01-30 09:47:32 UTC
+════════════════════════════════════════════════════════════
+
+hashtag
+Introduction
+Testnet III is now live.
+This is the current testing environment for Nexus Layer 1, focusing on security, decentralization, and orchestration testing.
+The Nexus App —
+app.nexus.xyz
+arrow-up-right
+— provides a browser-based way to contribute compute to the Nexus Network. No installation required.
+Under the hood, the Nexus App runs a high-performance Rust-based WebAssembly (WASM) runtime, allowing users to contribute computation securely and efficiently with a single click — directly from their browser. There’s no technical setup or prior knowledge required.
+The web app also serves as the primary dashboard for managing all aspects of your participation:
+Start or stop compute contribution with one toggle.
+Track your NEX Points in real time.
+Manage linked CLI nodes and wallets.
+Redeem rewards and monitor leaderboard performance.
+Web nodes connecting to Nexus
+hashtag
+Proving Options
+Link to Nexus Account (Recommended)
+Anonymous Proving
+1
+hashtag
+Create an Account
+Go to
+app.nexus.xyz
+arrow-up-right
+and sign up. You’ll automatically receive a built-in wallet. You can also add MetaMask or other wallets.
+2
+hashtag
+Start Contributing
+Flip the toggle switch to begin contributing compute and earning points.
+hashtag
+Why link your account?
+Automatically generate a wallet tied to your Nexus identity.
+Earn NEX Points for your contributions.
+Track your performance on the global leaderboard.
+Manage all your browser and CLI nodes from one dashboard.
+hashtag
+Benefits of Web-Based Contribution
+Zero Setup
+Start contributing without downloads or manual configuration.
+Cross-Platform Access
+Participate from any device with a modern browser — desktop, laptop, or tablet.
+WASM-Powered Performance
+Leverages a Rust-compiled WebAssembly runtime to maximize compute efficiency in the browser.
+Full Dashboard Control
+Monitor, manage, and scale your contributions — all from a single interface.
+hashtag
+Need Help?
+chevron-right
+Support and questions
+hashtag
+Have questions or need assistance? Reach out to our team on
+Discord
+arrow-up-right
+.
+Previous
+Nexus Layer 1 Devnet
+chevron-left
+Next
+Contribute via CLI
+chevron-right
+Last updated
+2 months ago
+
+════════════════════════════════════════════════════════════
+End of document
+════════════════════════════════════════════════════════════

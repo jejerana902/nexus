@@ -1,0 +1,94 @@
+════════════════════════════════════════════════════════════
+URL: https://docs.nexus.xyz/zkvm
+Title: The Nexus zkVM | zkVM | Nexus Docs
+Scraped: 2026-01-30 09:47:32 UTC
+════════════════════════════════════════════════════════════
+
+The Nexus zero-knowledge virtual machine is a modular, extensible, prover-optimized, fully-specified zkVM written in Rust, focused on performance and security.
+Nexus zkVM v0.3.6
+arrow-up-right
+is the current stable release, implementing the
+Nexus zkVM 3.0 machine
+.
+hashtag
+What is the Nexus zkVM?
+Nexus zkVM is a
+zero-knowledge virtual machine
+that enables developers to generate succinct proofs for any computation, demonstrating that a program executed every instruction and accessed memory correctly to produce a given output. Built with Rust and focused on performance and security, it provides a robust foundation for building applications.
+hashtag
+Proving Computation
+The Nexus zkVM can generate proofs for any computation. For example, given a Rust program that calculates the Fibonacci sequence:
+the zkVM can generate a succinct, efficiently verifiable proof of its correct execution. To get started with the Nexus zkVM, check out the
+Getting Started
+page.
+circle-exclamation
+The Nexus zkVM is in an experimental stage and is not currently recommended for production use.
+hashtag
+Key Features
+hashtag
+Security First
+The Nexus zkVM provides fully-specified cryptographic components with careful analysis of security and performance.
+The system includes no code obfuscation, no proprietary components, and no closed-source code.
+Source-available transparency ensures complete auditability for all users.
+hashtag
+Performance Optimized
+The prover-optimized architecture enables efficient proof generation across diverse workloads.
+Sensible defaults are configured to work out of the box without complex setup requirements.
+hashtag
+Developer Friendly
+Developers can write programs with execution proven to be correct.
+A comprehensive SDK and tooling ecosystem supports rapid development and deployment.
+Extensive documentation and examples guide users through implementation details.
+hashtag
+Extensible & Modular
+The system supports new languages, new precompiles, and new provers as the state-of-the-art advances.
+Configurable components prevent vendor lock-in and allow customization for specific use cases.
+Source-available code and consistent development by the Nexus zkVM team ensure long-term reliability.
+hashtag
+The Nexus Ethos: Assurance through Open Science
+We believe a zkVM must provide an efficient proving mechanism without compromising on security and correctness. A zkVM cannot provide transparency without being transparent itself. Every component of a zkVM should be powered by fully and publicly specified cryptographic components, with careful analysis of security and performance. The Nexus zkVM features no code obfuscation, no proprietary components, and no closed-source code.
+hashtag
+Modular and Extensible Architecture
+Built with a modular architecture at its core, the Nexus zkVM features independently optimized components that integrate smoothly. The system ships with carefully chosen defaults for the prover and memory model, allowing developers to start building immediately while maintaining confidence in both security and performance across diverse applications.
+Extensibility is a fundamental design principle of the Nexus zkVM. The codebase and active development by the Nexus team ensures continuous evolution, supporting emerging languages, advanced precompiles, and cutting-edge proving systems as the field progresses—all without locking developers into proprietary solutions.
+hashtag
+Use Cases
+The Nexus zkVM enables a wide range of applications:
+Verifiable Computation
+: Prove correct execution of any program
+Privacy-Preserving Applications
+: Compute on sensitive data without revealing it
+Blockchain Scaling
+: Generate proofs for off-chain computation
+Compliance & Auditing
+: Provide cryptographic guarantees for regulatory requirements
+Trustless Systems
+: Build applications that don’t require trusted intermediaries
+hashtag
+Getting Started
+1
+hashtag
+Quick Start Guide
+Get up and running in minutes: https://docs.nexus.xyz/zkvm/proving/overview
+2
+hashtag
+SDK Documentation
+Comprehensive API reference: https://docs.nexus.xyz/zkvm/proving/sdk
+3
+hashtag
+Architecture Overview
+Understand how it works: https://docs.nexus.xyz/zkvm/architecture
+4
+hashtag
+Example Walkthroughs
+Learn through practical examples: https://docs.nexus.xyz/zkvm/walkthroughs/galeshapley
+Experience the future of verifiable computation with Nexus zkVM - where transparency meets performance.
+Next
+zkVM Overview
+chevron-right
+Last updated
+23 days ago
+
+════════════════════════════════════════════════════════════
+End of document
+════════════════════════════════════════════════════════════

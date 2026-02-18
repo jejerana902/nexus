@@ -1,0 +1,258 @@
+════════════════════════════════════════════════════════════
+URL: https://docs.nexus.xyz/zkvm/walkthroughs/use-case-program-execution
+Title: Use Case: Program Execution | zkVM | Nexus Docs
+Scraped: 2026-01-30 09:47:32 UTC
+════════════════════════════════════════════════════════════
+
+hashtag
+Introduction
+As this walkthrough describes a more advanced use case for the zkVM, we recommend reviewing both the
+SDK Quick Start
+and the simpler
+Stable Matching
+walkthrough first.
+By definition, a zkVM is designed to prove the correctness of a program’s execution. However, a more advanced use case arises when the
+program to be proven
+is not the code running directly in the zkVM, but is instead provided
+as input
+to the zkVM.
+In this case, the zkVM executes an
+interpreter
+as its guest program, which then reads, interprets, and runs the input program inside the zkVM. This effectively allows the zkVM to generate a proof for the execution of arbitrary, dynamically supplied programs.
+Consider the following guest program in which
+program_to_be_proven
+is nested inside as input to the zkVM:
+Copy
+fn
+digest
+(
+program
+:
+&
+ElfFile
+)
+->
+Vec
+<
+u8
+>
+{
+...
+}
+fn
+rv32i_interpret
+(
+program
+:
+&
+ElfFile
+)
+->
+Vec
+<
+u8
+>
+{
+...
+}
+#[
+nexus_rt
+::
+main
+]
+#[
+nexus_rt
+::
+private_input
+(
+program_to_be_proven
+)]
+#[
+nexus_rt
+::
+public_input
+(
+program_digest
+)]
+fn
+main
+(
+program_to_be_proven
+:
+ElfFile
+,
+program_digest
+:
+Vec
+<
+u8
+>)
+->
+Vec
+<
+u8
+>
+{
+assert_eq!
+(
+digest
+(
+&
+program_to_be_proven
+),
+&
+program_digest
+);
+nexus_rt
+::
+print!
+(
+"
+Program digest
+{}
+validated, executing program...
+"
+,
+program_digest
+);
+let
+output
+=
+rv32i_interpret
+(
+&
+program_to_be_proven
+);
+nexus_rt
+::
+println!
+(
+"
+completed.
+"
+);
+output
+}
+At first glance, this pattern may seem redundant—why not just run
+program_to_be_proven
+directly as the guest program? However, this level of
+indirection
+unlocks powerful capabilities that significantly expand the utility of the zkVM.
+hashtag
+Enabling Private Program Execution
+The first benefit, illustrated by the example above, is the ability to treat the
+program to be proven
+as a
+private input
+. This allows the zkVM to prove the execution of programs
+without revealing their source
+, making it possible to build
+private smart contracts
+on-chain, among other use cases.
+By comparing the program’s digest to a
+public input
+, verifiers can still check meaningful properties such as:
+Consistency of the private program across multiple invocations.
+Conformance to a known, audited version without exposing implementation details.
+This digest check enables
+trust minimization
+while preserving
+privacy
+.
+hashtag
+Generalization Across Programs with a Single zkVM Binary
+A second, more technical benefit is that this structure enables the zkVM to handle a wide range of programs through a
+single, fixed guest binary
+— the interpreter.
+With careful planning around memory constraints (e.g. stack, heap, and output size bounds), this pattern allows:
+The proving key and public parameters can be shared and reused across many programs, which simplifies definitions for
+non-transparent provers which may require per-program setup
+arrow-up-right
+.
+Deployment pipelines for applications and smart contracts verifying zkVM proofs on-chain can be simplified significantly.
+Systems using non-transparent proving systems can be managed more easily, even though they often require per-program setup (note: the
+Stwo
+prover used here is transparent).
+This approach decouples the proving circuit from individual guest programs, significantly improving
+composability
+and
+maintainability
+.
+hashtag
+The Lambda Calculus Model
+Instead of working through this design at the full complexity of the RISC-V32i instruction set, this walkthrough uses a simpler computational model: the
+lambda calculus
+arrow-up-right
+. The example demonstrates the core concept with a minimal interpreter implemented as a guest program inside the zkVM.
+hashtag
+Implementation
+To start, follow the
+SDK Quick Start
+. After installing the zkVM, initialize the host and guest programs:
+Begin by creating a shared library for the guest and host program, located within the guest program crate.
+hashtag
+Shared Library
+The first part of the library defines terms in the calculus:
+lambda_calculus/src/guest/src/common.rs
+This defines an enum
+Term
+for possible term kinds: indexed
+Var
+,
+Lambda
+, and
+Apply
+, and includes trait implementations for construction and debugging. Next, full expressions and evaluation routines:
+lambda_calculus/src/guest/src/common.rs
+This provides
+step
+and
+eval
+routines to reduce expressions into stable forms.
+To make the common library work across both host and guest:
+Update the guest crate to depend on
+serde
+(used for serialization/deserialization of
+Expr
+):
+lambda_calculus/src/guest/Cargo.toml
+Export the common code as a Rust library:
+lambda_calculus/src/guest/src/lib.rs
+Make the library visible to the host program:
+lambda_calculus/Cargo.toml
+hashtag
+Guest Program
+As an
+Expr
+is a program in the lambda calculus, implement a simple interpreter (here omitting hash-based checking):
+lambda_calculus/src/guest/src/main.rs
+hashtag
+Host Program
+Create a host program that compiles the guest, provides a private program as input, and produces a proof of its execution:
+lambda_calculus/src/main.rs
+hashtag
+Verification
+Verification does not require access to the private program. A verifier can recompile the guest program and verify the proof against the expected outputs:
+This demonstrates using the zkVM to prove the correctness of executing a private program.
+hashtag
+Conclusion
+This walkthrough demonstrates how the Nexus zkVM can be applied to fundamental computational models, illustrating versatility beyond practical applications. The implementation proves correct execution of lambda calculus programs while keeping program logic private.
+Key achievements:
+A shared library architecture enabling code reuse between guest and host programs.
+A clean abstraction for lambda calculus expressions with evaluation semantics.
+A zkVM-based interpreter that generates proofs for program execution.
+A verification system that confirms correctness without exposing the original program.
+This example shows that zkVMs can handle abstract computational models, not just concrete algorithms, and that privacy-preserving verification principles generalize across domains. The approach transforms program execution from “trust the interpreter” to “verify the computation,” providing mathematical assurance that programs are evaluated correctly according to their formal semantics.
+Links for further reading:
+Use Case: Stable Matching: https://docs.nexus.xyz/zkvm/walkthroughs/galeshapley
+The Complete Specification: https://docs.nexus.xyz/zkvm/specifications/zkvm-overview
+Previous
+Use Case: Stable Matching
+chevron-left
+Next
+The Complete Specification
+chevron-right
+
+════════════════════════════════════════════════════════════
+End of document
+════════════════════════════════════════════════════════════

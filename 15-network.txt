@@ -1,0 +1,66 @@
+════════════════════════════════════════════════════════════
+URL: https://docs.nexus.xyz/network
+Title: Introduction | Network | Nexus Docs
+Scraped: 2026-01-30 09:47:32 UTC
+════════════════════════════════════════════════════════════
+
+hashtag
+Introduction
+Nexus is a Layer 1 blockchain purpose-built to support the next generation of verifiable, high-performance computation. Nexus introduces a new network architecture where execution, consensus, and verification operate as coordinated layers of a single, scalable system.
+At its foundation, the Nexus Network unifies compute from nodes around the world into one verifiable system state. Every node contributes to processing, validating, and ultimately proving the chain’s execution. Over time, this network will evolve toward the creation of a single, zero-knowledge proof that represents the complete computation of the Layer 1 — a concept referred to as the
+Universal Proof
+.
+hashtag
+Network Purpose
+The Nexus Network forms the backbone of the Nexus Layer 1 blockchain.
+It connects validators, co-processor nodes, and verifiers into a synchronized system that:
+Processes transactions
+through a dual execution layer (NexusEVM + NexusCore)
+Secures the ledger
+using NexusBFT, a custom Byzantine Fault Tolerant consensus
+Generates cryptographic proofs
+of execution through the Nexus zkVM and the distributed compute network
+Together, these systems create a
+planet-scale financial coordination layer
+capable of running high-frequency applications that interacts with machine intelligence with extreme performance and mathematical verifiability.
+hashtag
+Design Principles
+The network is designed for:
+Global unification of compute:
+A single cryptographically verifiable chain aggregates the world’s compute power
+Horizontal scaling:
+Every new node increases throughput across the network
+Vertical scaling:
+Each upgrade to the Nexus zkVM enhances the system’s ability to prove complex computation
+Autonomous coordination:
+Programmatic intelligence can interact securely with assets, information and applications, autonomously
+The Universal Proof:
+All computation is compressed into a single, verifiable proof that serves as a global source of truth
+Nexus Layer 1
+hashtag
+The Universal Proof
+The ultimate goal of Nexus is to achieve the Universal Proof. This is a breakthrough in trustless computing where:
+All verifiable computation is compressed into a single, succinct proof
+Chains, agents, and applications on Nexus are integrated into one coherent system
+Nexus transforms into a global, verifiable supercomputer, where performance, verifiability and accessibility converge
+hashtag
+Why Proofs Matter
+In a world increasingly run by opaque algorithms and black-box AI systems, cryptographic proofs help us move from assumptions to guarantees. Zero-knowledge proofs (ZKPs) let one party prove that a computation was performed correctly, without revealing the inputs or repeating the work. This unlocks a new primitive for a verifiable internet: trust in computation itself, secured by cryptography.
+With ZKPs, we can:
+Prove that smart contracts executed correctly
+Verify off-chain work from on-chain environments
+Build systems that are private and provable
+Nexus makes this real at scale. It turns zero-knowledge proofs from theoretical research into practical infrastructure.
+hashtag
+The Nexus 1.0 Whitepaper
+The foundational vision for the Nexus zkVM, the Nexus Network, and the search for a verifiable Internet is outlined in the Nexus zkVM 1.0 whitepaper:
+https://whitepaper.nexus.xyz (published January 2024)
+Next
+System Overview
+chevron-right
+Last updated
+2 months ago
+
+════════════════════════════════════════════════════════════
+End of document
+════════════════════════════════════════════════════════════

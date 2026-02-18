@@ -1,0 +1,67 @@
+════════════════════════════════════════════════════════════
+URL: https://docs.nexus.xyz/trading/perpetuals/price-oracles
+Title: Price Oracles | Nexus Docs
+Scraped: 2026-01-30 09:47:32 UTC
+════════════════════════════════════════════════════════════
+
+The Nexus Price Oracle System provides fast, reliable, manipulation-resistant spot index prices for all perpetual markets on the DEX.
+Oracle prices are a foundational component of the NexusCore risk engine and are used for:
+Mark price calculation
+Funding rate computation
+Margin requirements
+Liquidation triggers
+Triggering TP/SL and conditional orders
+Oracle updates are published every
+~3 seconds
+, ensuring accurate and timely tracking of global spot markets.
+hashtag
+Design Overview
+Nexus uses a validator-published, multi-source, volume-weighted oracle for spot pricing in the
+DEX Alpha
+.
+This design draws inspiration from validator-driven mechanisms but replaces stake-based weighting with market volume-based weighting, creating a more market-neutral and liquidity-reflective system.
+Every validator independently computes a spot oracle price for each supported asset using aggregated data from major centralized exchanges and, when appropriate, Nexus-native markets.
+hashtag
+Validator Responsibilities
+Each validator continuously:
+Fetches spot mid-prices
+for each asset from supported exchanges
+Computes a volume-weighted median
+across these sources
+Publishes an updated oracle price
+roughly every 3 seconds
+Signs and broadcasts
+the price to other validators and the network
+These prices are then aggregated into a final L1 oracle price consumed by NexusCore.
+hashtag
+External Data Sources
+Validators query spot mid-prices from a diverse set of high-liquidity exchanges, including:
+Binance
+OKX
+Bybit
+Kraken
+KuCoin
+Gate.io
+MEXC
+Each source contributes to the oracle calculation using a predefined
+volume-based weight
+, reflecting the global liquidity share of each venue for that asset.
+hashtag
+Final Calculation
+Validators gather spot mid-prices
+Volume-based weights applied
+Validators compute a weighted median and each broadcast to the network
+NexusCore aggregates all validator submissions
+NexusCore computes the final L1 oracle price as a volume-weighted median
+Previous
+Liquidations
+chevron-left
+Next
+Spot
+chevron-right
+Last updated
+2 months ago
+
+════════════════════════════════════════════════════════════
+End of document
+════════════════════════════════════════════════════════════

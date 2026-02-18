@@ -1,0 +1,60 @@
+════════════════════════════════════════════════════════════
+URL: https://docs.nexus.xyz/network/building-on-the-layer-1/quickstart-development
+Title: Quickstart Development | Network | Nexus Docs
+Scraped: 2026-01-30 09:47:32 UTC
+════════════════════════════════════════════════════════════
+
+hashtag
+Welcome to the Nexus Layer 1
+Nexus Layer 1 is designed to be familiar and accessible to Ethereum developers. If you’ve built on Ethereum before, you’re already equipped to build on Nexus. Our platform is fully EVM-compatible, which means you can use all your existing tools, libraries, and code without any modifications.
+hashtag
+Network Configuration
+hashtag
+Accessing Your Wallet
+Every Nexus user automatically receives an Ethereum wallet
+You can also use any existing Ethereum wallet (like MetaMask)
+Your ETH address works seamlessly on the Nexus Chain
+hashtag
+Network Connection
+1
+hashtag
+Connect your wallet
+Open your web3 wallet extension or app.
+2
+hashtag
+Add a new network
+Use the Nexus network details to add the Nexus Chain to your wallet.
+3
+hashtag
+Start transacting
+Begin using the Nexus Chain for transactions.
+hashtag
+Network Information
+hashtag
+Network Info
+Property
+Value
+Chain ID
+3945
+Native Token
+Nexus Token (NEX)
+RPC (HTTP)
+https://testnet.rpc.nexus.xyz
+RPC (WebSocket)
+wss://testnet.rpc.nexus.xyz
+Explorer
+https://nexus.testnet.blockscout.com
+Faucet
+https://faucet.nexus.xyz
+Previous
+Marching towards Mainnet
+chevron-left
+Next
+Developing your first app
+chevron-right
+Last updated
+2 days ago
+
+════════════════════════════════════════════════════════════
+End of document
+════════════════════════════════════════════════════════════

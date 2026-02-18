@@ -1,0 +1,283 @@
+════════════════════════════════════════════════════════════
+URL: https://docs.nexus.xyz/trading/perpetuals/liquidations
+Title: Liquidations | Nexus Docs
+Scraped: 2026-01-30 09:47:32 UTC
+════════════════════════════════════════════════════════════
+
+Liquidations protect the Nexus DEX from insolvency by ensuring that traders maintain sufficient margin to support their leveraged positions.
+When a trader’s account equity falls below the required maintenance margin, NexusCore’s liquidation engine automatically intervenes and closes the position at the current mark price, preventing negative balances and preserving system-wide solvency.
+hashtag
+How Liquidation Works
+Mark Price & Equity
+Nexus uses a mark price derived from the Nexus Oracle System. A trader’s equity is computed from:
+e
+q
+u
+i
+t
+y
+=
+c
+o
+l
+l
+a
+t
+e
+r
+a
+l
++
+u
+n
+r
+e
+a
+l
+i
+z
+e
+d
+−
+p
+n
+l
+(
+m
+a
+r
+k
+−
+p
+r
+i
+c
+e
+)
+equity = collateral + unrealized_-pnl(mark_-price)
+e
+q
+u
+i
+t
+y
+=
+co
+ll
+a
+t
+er
+a
+l
++
+u
+n
+re
+a
+l
+i
+ze
+d
+−
+​
+p
+n
+l
+(
+ma
+r
+k
+−
+​
+p
+r
+i
+ce
+)
+In the DEX Alpha, collateral updates occur only on position change or liquidation.
+Margin Requirements
+Initial Margin
+i
+n
+i
+t
+i
+a
+l
+−
+m
+a
+r
+g
+i
+n
+=
+(
+p
+o
+s
+i
+t
+i
+o
+n
+−
+s
+i
+z
+e
+×
+e
+n
+t
+r
+y
+−
+p
+r
+i
+c
+e
+)
+/
+l
+e
+v
+e
+r
+a
+g
+e
+initial_-margin = (position_-size × entry_-price) / leverage
+ini
+t
+ia
+l
+−
+​
+ma
+r
+g
+in
+=
+(
+p
+os
+i
+t
+i
+o
+n
+−
+​
+s
+i
+ze
+×
+e
+n
+t
+r
+y
+−
+​
+p
+r
+i
+ce
+)
+/
+l
+e
+v
+er
+a
+g
+e
+Maintenance Margin
+m
+a
+i
+n
+t
+e
+n
+a
+n
+c
+e
+−
+m
+a
+r
+g
+i
+n
+=
+1
+/
+(
+m
+a
+x
+−
+l
+e
+v
+e
+r
+a
+g
+e
+×
+2
+)
+maintenance_-margin = 1 / (max_-leverage × 2)
+main
+t
+e
+nan
+c
+e
+−
+​
+ma
+r
+g
+in
+=
+1/
+(
+ma
+x
+−
+​
+l
+e
+v
+er
+a
+g
+e
+×
+2
+)
+Liquidation Trigger
+A position is liquidated when equity falls below maintenance margin.
+Liquidation Process
+Trigger: Equity falls below maintenance margin.
+Execution: A dedicated on-chain liquidator sub-account closes the position at or near mark price.
+Bankruptcy Protection: A price cap prevents negative balances.
+Insurance Fund: Covers any remaining shortfall if the position cannot be closed in time.
+Previous
+Funding Rates
+chevron-left
+Next
+Price Oracles
+chevron-right
+Last updated
+2 months ago
+
+════════════════════════════════════════════════════════════
+End of document
+════════════════════════════════════════════════════════════

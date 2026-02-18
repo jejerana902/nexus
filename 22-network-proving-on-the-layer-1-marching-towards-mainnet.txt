@@ -1,0 +1,47 @@
+════════════════════════════════════════════════════════════
+URL: https://docs.nexus.xyz/network/proving-on-the-layer-1/marching-towards-mainnet
+Title: Marching towards Mainnet | Network | Nexus Docs
+Scraped: 2026-01-30 09:47:32 UTC
+════════════════════════════════════════════════════════════
+
+The Nexus Network is preparing for the next major milestone:
+Mainnet
+. This transition marks a significant step forward from the current Testnet III phase, introducing production-ready features, enhanced security, and real-world applications.
+hashtag
+What to Expect
+Production-Ready Network
+: Mainnet will bring enterprise-grade reliability and performance.
+Real Economic Incentives
+: Participants can look forward to actual NEX token rewards and real-world value.
+Broader Ecosystem
+: More applications, developers, and users will join the production network.
+Advanced Features
+: Expect production tools, enterprise dashboards, and comprehensive developer resources.
+hashtag
+Transition Timeline
+1
+hashtag
+Testnet III Phase
+Ongoing testing, security audits, and final feature development.
+2
+hashtag
+Mainnet Launch
+Official announcement and onboarding of production participants.
+3
+hashtag
+Migration
+Guidance will be provided for users moving from Testnet III to Mainnet.
+Stay tuned for more updates as we approach the launch of Mainnet!
+Resources:
+FAQ: https://docs.nexus.xyz/layer-1/testnet/faq
+Quickstart Development: https://docs.nexus.xyz/layer-1/developer/overview
+Previous
+Contribute via CLI
+chevron-left
+Next
+Quickstart Development
+chevron-right
+
+════════════════════════════════════════════════════════════
+End of document
+════════════════════════════════════════════════════════════

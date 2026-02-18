@@ -1,0 +1,49 @@
+════════════════════════════════════════════════════════════
+URL: https://docs.nexus.xyz/trading/perpetuals/positions
+Title: Positions | Nexus Docs
+Scraped: 2026-01-30 09:47:32 UTC
+════════════════════════════════════════════════════════════
+
+Positions represent your active exposure in markets on the Nexus DEX. Each position maintains a live state within the NexusCore risk engine, tracking your entry price, size, collateral usage, funding, fees, and real-time profit and loss.
+Positions are updated every Core block, ensuring near-instant feedback on risk, margin, and liquidation thresholds.
+hashtag
+Open Positions
+Your open positions panel displays continuously updated metrics derived from the CLOB co-processor’s real-time risk engine:
+Unrealized PnL
+— shown in both USD value and percentage
+Position Size
+— total notional exposure (long or short)
+Average Entry Price
+— volume-weighted entry across fills
+Margin Usage
+— collateral allocated to maintain the position
+Liquidation Price
+— the estimated price at which the risk engine will liquidate your position
+Funding Payments
+— funding paid or received since opening
+All calculations follow the deterministic margin and funding rules enforced inside NexusCore’s financial state machine.
+hashtag
+Modifying Positions
+Active positions can be managed through various methods to adjust your exposure or exit trades. Updates are applied atomically via the Core matching engine.
+Adjusting Position Size
+You can increase or decrease your position size via market or limit orders using the standard trading modal.
+Orders in the opposite direction exceeding your current position size will automatically "flip" your positions.
+For example, if you have 1 BTC active long and place a market sell for 2 BTC, you'll end up with 1 BTC active short.
+Closing Positions
+Exit a position partially or in full from the Positions tab.
+Closing executes a market or limit order on the opposite side and immediately realizes PnL after the fill.
+hashtag
+Position History
+Track and review trading activity with transparent historical data through the Position History tab.
+Previous
+Order Types
+chevron-left
+Next
+Funding Rates
+chevron-right
+Last updated
+2 months ago
+
+════════════════════════════════════════════════════════════
+End of document
+════════════════════════════════════════════════════════════

@@ -1,0 +1,53 @@
+════════════════════════════════════════════════════════════
+URL: https://docs.nexus.xyz/introduction/nexus-dex-alpha
+Title: Nexus DEX Alpha | Nexus Docs
+Scraped: 2026-01-30 09:47:32 UTC
+════════════════════════════════════════════════════════════
+
+hashtag
+Nexus DEX Alpha
+The Nexus DEX Alpha is live at app.nexus.xyz/trade on Testnet, providing users with early access to explore the platform's features in a risk-free environment. This is the Alpha version of the Nexus DEX. We actively encourage community feedback and engagement to help shape the product's evolution.
+The Nexus DEX Alpha features a test environment to trade BTC-USD perpetual futures contracts with up to 50x leverage.
+hashtag
+Architecture
+The current Nexus Layer 1 Testnet represents an early Alpha release of the network. It is designed to demonstrate the foundational architecture and experience that will be core to the Nexus ecosystem. However, not all planned features are available at this stage. Many components will be progressively introduced over the coming months as performance and feedback are validated.
+This environment should be considered experimental and subject to rapid iteration. Performance characteristics, APIs, and system parameters may change without notice during this phase.
+The Exchange Engine within NexusCore sits at the core of the Layer-1 and provides the center of all liquidity.
+*Equivalent stack-based visualization, showing NexusEVM and NexusCore as two composable state-machines,
+with NexusCore and the Nexus Exchange being shown at the center to highlight their central role in the Nexus Layer-1.
+hashtag
+Onboarding Flow
+hashtag
+Gain Access
+Access codes will be released in tranches to the Nexus community, and interested users of the DEX. Sign up to the waitlist at
+app.nexus.xyz/trade
+arrow-up-right
+. You will be notified via email when you are assigned an access code.
+hashtag
+Testnet USDX
+Testnet USDX is an ERC-20 token on Nexus Layer 1 Testnet that enables trading on the DEX, and via the DEX. Testnet USDX has no monetary value.
+Claim Testnet USDX
+You can claim Testnet USDX at app.nexus.xyz/trade . Get 500 USDX on your first claim. Claim 50 USDX once every 24h from NexusOS during the Alpha.
+hashtag
+Explore Resources
+We will release educational materials on our blog and socials over the coming weeks.
+hashtag
+Disclaimers
+The Nexus DEX Alpha is not available to users located in, residents of, or accessing the service from regions subject to sanctions by the U.S. Office of Foreign Assets Control ("OFAC") or other applicable sanctions regimes. Additionally, Nexus reserves the right to block access to the Nexus DEX Alpha in jurisdictions where such access would violate applicable laws or regulations, including but not limited to jurisdictions that prohibit or restrict access to digital asset trading platforms or decentralized exchange services.
+Nexus reserves the right to implement additional geographic restrictions as required by law, regulation, or compliance considerations, and may block access from additional jurisdictions without prior notice. Users are solely responsible for ensuring their use of the Nexus DEX Alpha complies with all applicable laws and regulations in their jurisdiction.
+By accessing or using the Nexus DEX Alpha, you represent and warrant that you are not located in, a resident of, or accessing the service from any restricted jurisdiction.
+hashtag
+Support
+For questions, feedback, or bug reports, join the Nexus discord server!
+Previous
+Introduction
+chevron-left
+Next
+NexusCore
+chevron-right
+Last updated
+2 months ago
+
+════════════════════════════════════════════════════════════
+End of document
+════════════════════════════════════════════════════════════

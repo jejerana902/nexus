@@ -1,0 +1,70 @@
+════════════════════════════════════════════════════════════
+URL: https://docs.nexus.xyz/zkvm/overview/zkvm-overview
+Title: zkVM Overview | zkVM | Nexus Docs
+Scraped: 2026-01-30 09:47:32 UTC
+════════════════════════════════════════════════════════════
+
+Zero-Knowledge Virtual Machines (zkVMs) represent an approach to verifiable computation, enabling developers to generate cryptographic proofs that a computation was executed correctly.
+hashtag
+What is a zkVM?
+A zero-knowledge virtual machine is a system that can execute programs and generate succinct, verifiable proofs of their correct execution. These proofs demonstrate that a program executed every line of code and accessed memory correctly, culminating in the expected output. Unlike traditional virtual machines that simply run code, zkVMs produce cryptographic evidence that the computation was performed accurately according to the specified program logic.
+This fundamental capability transforms how we approach trust in computing. Instead of relying on individual parties or infrastructure to validate computations, zkVMs enable any computation execution to be independently verified. This opens up entirely new possibilities for preserving privacy and ensuring computational integrity across distributed networks.
+hashtag
+Key Concepts
+hashtag
+Zero-Knowledge Proofs
+Succinct proofs of correct execution are cryptographic proofs that allow a prover to convince a verifier that a certain computation was performed correctly — without the verifier having to redo the computation themselves. These proofs are typically non-interactive, publicly verifiable, and much smaller and faster to verify than re-executing the original computation.
+A zero-knowledge proof is a special type of such proof that reveals nothing beyond the correctness of the statement itself. That is, it allows the verifier to be convinced that the computation was carried out correctly, without learning anything about the inputs, intermediate steps, or any other private data.
+Example: For an example of a zero-knowledge proof, see this description of Schnorr’s: https://www.zkdocs.com/docs/zkdocs/zero-knowledge-protocols/schnorr/
+hashtag
+Succinct Verification
+zkVM proofs are “succinct,” meaning they can be verified much faster than re-executing the original computation. A proof for a program that takes hours to run can often be verified in milliseconds.
+hashtag
+Universal Computation
+Modern zkVMs are designed to handle arbitrary computations, not just specific mathematical operations. This means developers can write programs in familiar languages and generate proofs for complex business logic.
+hashtag
+How zkVMs Work
+1
+hashtag
+Program Execution
+The zkVM executes a program step-by-step, tracking all operations and state changes and recording the computational trace.
+2
+hashtag
+Proof Generation
+The trace is converted into a cryptographic proof using advanced techniques like STARKs, SNARKs, or other proof systems.
+3
+hashtag
+Verification
+Anyone can verify the proof to confirm the correctness of the trace is proven.
+hashtag
+Applications of zkVMs
+hashtag
+Privacy-Preserving Computation
+Sensitive computations can be proven correct without revealing private inputs, enabling applications in healthcare, finance, and personal data processing. See walkthroughs at Gale-Shapley and Lambda Calculus:
+https://docs.nexus.xyz/zkvm/walkthroughs/galeshapley
+https://docs.nexus.xyz/zkvm/walkthroughs/lambdacalculus
+hashtag
+Verifiable AI/ML
+Machine learning models can generate proofs of their inference results, ensuring AI decisions are transparent and auditable.
+hashtag
+Compliance and Auditing
+Organizations can prove compliance with regulations or internal policies without exposing sensitive business data.
+hashtag
+Blockchain Scaling
+zkVMs enable Layer 2 scaling solutions by allowing complex computations to be performed off-chain while maintaining on-chain verifiability.
+Zero-knowledge virtual machines are transforming how we think about computation, privacy, and trust in digital systems.
+Further reading:
+The Nexus zkVM: https://docs.nexus.xyz/zkvm/nexus-zkvm
+Architecture: https://docs.nexus.xyz/zkvm/architecture
+Previous
+The Nexus zkVM
+chevron-left
+Next
+Architecture
+chevron-right
+Last updated
+23 days ago
+
+════════════════════════════════════════════════════════════
+End of document
+════════════════════════════════════════════════════════════
