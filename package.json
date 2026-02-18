@@ -1,0 +1,25 @@
+{
+  "name": "nexuspump",
+  "version": "1.0.0",
+  "description": "NexusPump - A pump.fun clone on Nexus Layer 1 Testnet III",
+  "private": true,
+  "workspaces": [
+    "contracts",
+    "frontend"
+  ],
+  "scripts": {
+    "install:all": "npm install && cd contracts && npm install && cd ../frontend && npm install",
+    "deploy": "cd contracts && npx hardhat run scripts/deploy.js --network nexus",
+    "dev": "cd frontend && npm run dev",
+    "build": "cd contracts && npx hardhat compile && cd ../frontend && npm run build"
+  },
+  "keywords": [
+    "nexus",
+    "bonding-curve",
+    "token-launchpad",
+    "dex",
+    "web3"
+  ],
+  "author": "",
+  "license": "MIT"
+}
